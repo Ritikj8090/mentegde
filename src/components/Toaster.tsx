@@ -12,9 +12,13 @@ import { CheckCircle2 } from "lucide-react";
 
 type Props = {
   open: boolean;
+  href: string;
+  title: string;
+  description: string;
+  icon: React.ReactNode;
 };
 
-export function Toaster({ open }: Props) {
+export function Toaster({ open, href, title, description, icon }: Props) {
   const navigate = useNavigate();
   const [countdown, setCountdown] = useState(3);
 
@@ -27,7 +31,8 @@ export function Toaster({ open }: Props) {
       setCountdown((prev) => {
         if (prev === 1) {
           clearInterval(timer);
-          navigate("/dashboard"); // change route if needed
+          window.location.reload();
+          navigate(href); // change route if needed
         }
         return prev - 1;
       });
@@ -40,17 +45,15 @@ export function Toaster({ open }: Props) {
     <AlertDialog open={open}>
       <AlertDialogContent className="text-center">
         <AlertDialogHeader>
-          <div className="flex justify-center mb-3">
-            <CheckCircle2 className="text-green-500 size-14" />
-          </div>
+          <div className="flex justify-center mb-3">{icon}</div>
 
           <AlertDialogTitle className="text-2xl text-center">
-            Onboarding Completed 🎉
+            {title}
           </AlertDialogTitle>
 
           <AlertDialogDescription className="mt-2 text-sm text-center">
-            You’re all set!  
-            Redirecting to your dashboard in{" "}
+            {description}
+            <br />
             <span className="font-bold text-primary">{countdown}</span>…
           </AlertDialogDescription>
         </AlertDialogHeader>

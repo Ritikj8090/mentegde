@@ -39,26 +39,22 @@ import UserSignIn from "./pages/auth/User-sign-in";
 import UserSignUp from "./pages/auth/User-sign-up";
 import UserProfilePage from "./pages/userProfile";
 import InternshipPage from "./pages/manageInternship/InternshipPage";
+import WorkboardPage from "./pages/workboard/WorkboardPage";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <MainLayout />,
     children: [
-      { path: "user", element: <UserLanding /> },
-      { path: "naukri", element: <Naukri /> },
-      { path: "mentor", element: <MentorLanding /> },
-
       { path: "/internship-dashboard", element: <InternshipDashboard /> },
-      
+
       { path: "/user/dashboard", element: <InternDashboard /> },
-      { path: "/log-in", element: <LogIn /> },
       { path: "/mentor/profile", element: <MentorProfiles /> },
       { path: "/productworkboard", element: <ProductWorkbook /> },
-      { path: "/create", element: <CreateInternship /> },
-      { path: "/internship-overview", element: <InternshipPage /> },
-      { path: "/mentor-dash", element: <MentorDashboardTwo /> },
 
+      { path: "/create", element: <CreateInternship /> },
+
+      { path: "/mentor-dash", element: <MentorDashboardTwo /> },
       {
         index: true,
         element: (
@@ -125,7 +121,7 @@ const router = createBrowserRouter([
           { path: "onboarding", element: <Onboarding /> },
           { path: "user/profile", element: <UserProfilePage /> },
           { path: "mentor/profile", element: <MentorProfiles /> },
-
+          { path: "workboard/:internshipId", element: <WorkboardPage /> },
           { path: "dashboard", element: <Dashboard /> },
           { path: "mentor-profile/:id", element: <MentorProfile /> },
           { path: "mentor/:id", element: <MentorScreen /> },
@@ -160,6 +156,7 @@ const router = createBrowserRouter([
           { path: "mentor-profile", element: <MentorProfile /> },
           { path: "mentor/:id", element: <MentorScreen /> },
           { path: "create-session", element: <CreateSession /> },
+          { path: "internship-overview", element: <InternshipPage /> },
         ],
       },
       { path: "access-denied", element: <AccessDenied /> },

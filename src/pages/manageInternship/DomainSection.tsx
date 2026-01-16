@@ -44,7 +44,7 @@ const DomainSection = ({ form, domain, title }: TechSectionProps) => {
       <h3 className="font-semibold">{title} Mentor Section</h3>
       <FormField
         control={form.control}
-        name={`${domain}.description`}
+        name={`${domain}.domain_description`}
         render={({ field }) => (
           <FormItem>
             <FormLabel>{title} Description</FormLabel>
@@ -71,24 +71,10 @@ const DomainSection = ({ form, domain, title }: TechSectionProps) => {
       />
       <ArrayInputField
         form={form}
-        name={`${domain}.tasks`}
-        label="Tasks"
-        description="Add tasks"
-        placeholder="e.g. Create a dashboard, Build a website"
-      />
-      <ArrayInputField
-        form={form}
-        name={`${domain}.deliverables`}
-        label="Deliverables"
-        description="Add deliverables"
-        placeholder="e.g. Project report, Presentation"
-      />
-      <ArrayInputField
-        form={form}
-        name={`${domain}.milestones`}
-        label="Milestones"
-        description="Add milestones"
-        placeholder="e.g. Milestone 1, Milestone 2"
+        name={`${domain}.tools_used`}
+        label="Tools Used"
+        description="Add tools used"
+        placeholder="e.g. React, Node.js, MongoDB"
       />
       <div className=" grid grid-cols-2 gap-5">
         <FormField
@@ -148,15 +134,12 @@ const DomainSection = ({ form, domain, title }: TechSectionProps) => {
                     selected={field.value}
                     onSelect={field.onChange}
                     disabled={(date) =>
-                      date > new Date() || date < new Date("1900-01-01")
+                      date < new Date()
                     }
                     captionLayout="dropdown"
                   />
                 </PopoverContent>
               </Popover>
-              <FormDescription>
-                Pick a start date for your internship
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -192,15 +175,12 @@ const DomainSection = ({ form, domain, title }: TechSectionProps) => {
                     selected={field.value}
                     onSelect={field.onChange}
                     disabled={(date) =>
-                      date > new Date() || date < new Date("1900-01-01")
+                      date < new Date()
                     }
                     captionLayout="dropdown"
                   />
                 </PopoverContent>
               </Popover>
-              <FormDescription>
-                Pick an end date for your internship
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -236,7 +216,7 @@ const DomainSection = ({ form, domain, title }: TechSectionProps) => {
                     selected={field.value}
                     onSelect={field.onChange}
                     disabled={(date) =>
-                      date > new Date() || date < new Date("1900-01-01")
+                      date < new Date()
                     }
                     captionLayout="dropdown"
                   />

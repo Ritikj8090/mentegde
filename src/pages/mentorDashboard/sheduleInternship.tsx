@@ -8,10 +8,24 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Internship } from "@/index";
 import { cn } from "@/lib/utils";
+import { getScheduledInternships } from "@/utils/internship";
+import { format } from "date-fns";
 import { Clock } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const SheduleInternship = () => {
+  const [internships, setInternships] = useState<Internship[]>([]);
+
+  useEffect(() => {
+    const fetchInternships = async () => {
+      const res = await getScheduledInternships();
+      setInternships(res);
+      console.log(res);
+    };
+    fetchInternships();
+  }, []);
   return (
     <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50  max-h-screen mb-4">
       <CardHeader>
@@ -19,14 +33,22 @@ const SheduleInternship = () => {
           <Clock className="text-pink-400" /> Scheduled Internships
         </CardTitle>
       </CardHeader>
-      <CardContent className=" overflow-y-scroll space-y-3">
-        <RenderCard />
-      </CardContent>
+      {internships.length > 0 ? (
+        <CardContent className=" overflow-y-scroll">
+          {internships.map((internship: Internship) => (
+            <RenderCard key={internship.id} internship={internship} />
+          ))}
+        </CardContent>
+      ) : (
+        <CardContent className=" flex items-center justify-center h-full">
+          <p className=" text-muted-foreground">No Scheduled Internships</p>
+        </CardContent>
+      )}
     </Card>
-  )
-}
+  );
+};
 
-export default SheduleInternship
+export default SheduleInternship;
 
 interface Domain {
   name: string;
@@ -40,7 +62,7 @@ interface Domain {
   joined: number;
   seatsLeft: number;
 }
-const RenderCard = () => {
+const RenderCard = ({ internship }: { internship: Internship }) => {
   const domains: Domain[] = [
     {
       name: "Management",
@@ -69,30 +91,26 @@ const RenderCard = () => {
   ];
   const status = "active";
   return (
-    <Card>
+    <Card className=" bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50">
       {/* Header Section */}
       <CardHeader>
-        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div className="space-y-2">
-            <CardTitle className="text-2xl font-semibold flex items-center gap-2">Chess Game
-              <Badge
-              className={cn("", status === "active" ? " border-green-600/50  text-green-600 bg-green-600/50" : "flex-1 border-red-600/50 text-red-600 bg-red-600/50")}
-            >
-              {status.toLocaleUpperCase()}
-            </Badge>
+        <div className=" space-y-4">
+          <div className=" flex justify-between">
+            <CardTitle className="text-2xl font-semibold flex items-center gap-2">
+              {internship.internship_title}
             </CardTitle>
-            <CardDescription className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-              <span className="font-medium">
-                Make ui and backend for chess game
+            <div className="flex flex-col items-center gap-3">
+              <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+                ID: {internship.id.slice(0, 5)}
               </span>
-            </CardDescription>
+              <span className=" text-primary text-2xl font-bold">
+                {internship.price}
+              </span>
+            </div>
           </div>
-          <div className="flex flex-col items-center gap-3">
-            <span className="text-sm font-medium text-muted-foreground">
-              ID: IG78
-            </span>
-            <span className=" text-primary text-2xl font-bold">$200</span>
-          </div>
+          <CardDescription className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+            <span className="font-medium">{internship.description}</span>
+          </CardDescription>
         </div>
       </CardHeader>
 
@@ -101,86 +119,99 @@ const RenderCard = () => {
         <h2 className="text-xl font-semibold text-foreground">Domains</h2>
 
         <div className=" space-y-2">
-          {domains.map((domain) => (
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="text-xl font-bold text-primary">
-                  {domain.name}
-                </CardTitle>
-                <div className=" space-x-3">
-                  <Button
-                    variant="outline"
-                    size="default"
-                    className=" cursor-pointer flex-1 border-green-600/50 bg-green-600/10 text-green-600 hover:bg-green-600/50 hover:text-white"
-                  >
-                    Payment Details
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="default"
-                    className=" cursor-pointer flex-1 border-primary/50 bg-primary/10 text-primary hover:bg-primary/50 hover:text-white"
-                  >
-                    View Details
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="mb-3 space-y-3 text-sm">
-                <Separator />
-                <div className="flex gap-2">
-                  <span className="font-semibold text-foreground">Skills:</span>
-                  <span className="text-muted-foreground">
-                    {domain.skills}
-                  </span>
-                </div>
-                <div className="flex gap-2">
-                  <span className="font-semibold text-foreground">Tasks:</span>
-                  <span className="text-pretty text-muted-foreground">
-                   {domain.tasks}
-                  </span>
-                </div>
-                <div className="grid grid-cols-2 gap-3 pt-2">
-                  <div>
+          {Object.entries(internship.domains).map(
+            ([domainName, domainData]) => (
+              <Card className=" px-1 py-3">
+                <CardHeader className="flex flex-row items-center justify-between px-1">
+                  <CardTitle className="text-xl font-bold text-primary capitalize">
+                    {domainName}
+                  </CardTitle>
+                  <div className=" space-x-3">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className=" cursor-pointer flex-1 border-green-600/50 bg-green-600/10 text-green-600 hover:bg-green-600/50 hover:text-white"
+                    >
+                      Payment Details
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className=" cursor-pointer flex-1 border-primary/50 bg-primary/10 text-primary hover:bg-primary/50 hover:text-white"
+                    >
+                      View Details
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-3 text-sm px-1">
+                  <Separator className=" -mt-2" />
+                  <div className="flex gap-2">
                     <span className="font-semibold text-foreground">
-                      Hours:
-                    </span>{" "}
-                    <span className="text-muted-foreground">{domain.hours} H</span>
+                      Skills:
+                    </span>
+                    <span className="text-muted-foreground">
+                      {domainData.skills_required
+                        .map((skill: string) => skill)
+                        .join(", ")}
+                    </span>
                   </div>
-                  <div>
-                    <span className="font-semibold text-foreground">
-                      Duration:
-                    </span>{" "}
-                    <span className="text-muted-foreground">{domain.duration} weeks</span>
+
+                  <div className="grid grid-cols-2 gap-3 pt-2">
+                    <div>
+                      <span className="font-semibold text-foreground">
+                        Hours:
+                      </span>{" "}
+                      <span className="text-muted-foreground">
+                        {domainData.weekly_hours} hours
+                      </span>
+                    </div>
+                    <div>
+                      <span className="font-semibold text-foreground">
+                        Duration:
+                      </span>{" "}
+                      <span className="text-muted-foreground">
+                        {domainData.duration}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="font-semibold text-foreground">
+                        Start:
+                      </span>{" "}
+                      <span className="text-muted-foreground">
+                        {format(domainData.start_date, "dd MMM yyyy")}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="font-semibold text-foreground">
+                        End:
+                      </span>{" "}
+                      <span className="text-muted-foreground">
+                        {format(domainData.end_date, "dd MMM yyyy")}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="font-semibold text-foreground">
+                        Limit:
+                      </span>{" "}
+                      <span className="text-muted-foreground">
+                        {domainData.max_seats}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="font-semibold text-foreground">
+                        Joined:
+                      </span>{" "}
+                      <span className="text-muted-foreground">
+                        {domainData.max_seats}
+                      </span>
+                    </div>
                   </div>
-                  <div>
-                    <span className="font-semibold text-foreground">
-                      Start:
-                    </span>{" "}
-                    <span className="text-muted-foreground">{domain.start}</span>
-                  </div>
-                  <div>
-                    <span className="font-semibold text-foreground">End:</span>{" "}
-                    <span className="text-muted-foreground">{domain.end}</span>
-                  </div>
-                  <div>
-                    <span className="font-semibold text-foreground">
-                      Limit:
-                    </span>{" "}
-                    <span className="text-muted-foreground">{domain.limit}</span>
-                  </div>
-                  <div>
-                    <span className="font-semibold text-foreground">
-                      Joined:
-                    </span>{" "}
-                    <span className="text-muted-foreground">{domain.joined}</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            )
+          )}
         </div>
       </CardContent>
-
-      
     </Card>
   );
 };

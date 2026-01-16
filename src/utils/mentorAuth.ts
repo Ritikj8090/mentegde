@@ -1,4 +1,5 @@
 import { api } from "@/services/api";
+import { UserProfile } from "..";
 
 export const mentorSignup = async (full_name: string, email: string, password: string) => {
     const response = await api.post("/auth/mentor-signup", { full_name, email, password });
@@ -22,4 +23,9 @@ export const findMentor = async (payload: { email?: string; id?: string, full_na
 export const findMentors = async (payload: { email?: string; id?: string, full_name?: string }) => {
   const response = await api.post("/auth/find-mentors", {...payload});
   return response.data; // Adjust if wrapped in a `data` field
+}
+
+export const mentorOnbording = async (data:any) => {
+  const response = await api.put("/auth/oboarding-mentor", data);
+  return response.data;
 }

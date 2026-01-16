@@ -21,97 +21,111 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { defaultValues, internshipSchema } from "./schema";
+import { internshipSchema } from "./schema";
 import DomainSection from "./DomainSection";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState } from "react";
-import { UserProfile } from "@/index";
+import { Internship, UserProfile } from "@/index";
 import { findMentors } from "@/utils/mentorAuth";
-import { createInternship } from "@/utils/internship";
+import { editInternship } from "@/utils/internship";
 import { UPLOAD_PHOTOS_URL } from "@/components/config/CommonBaseUrl";
 
-export const demo: z.infer<typeof internshipSchema> = {
-  internship_title: "AI Product Development Internship",
-  description:
-    "Work with a real startup to build, validate, and launch an AI-powered SaaS product with guidance from both technical and product mentors.",
-  price: 299,
-
-  approval_required: true,
-  host_domain: "tech",
-
-  co_host_name: "Ritika Sharma",
-
-  tech: {
-    domain_name: "tech",
-    domain_description:
-      "Build the backend, APIs, and AI models that power the product.",
-    skills_required: ["Node.js", "PostgreSQL", "OpenAI API", "React"],
-    tools_used: ["VS Code", "GitHub", "Postman", "Docker"],
-    tags: ["AI", "Full Stack", "Startup"],
-    start_date: new Date("2026-02-01"),
-    end_date: new Date("2026-03-31"),
-    application_deadline: new Date("2026-01-25"),
-    weekly_hours: 10,
-    duration: "8 Weeks",
-    difficulty_level: "Intermediate",
-    marketplace_category: "AI & SaaS",
-    max_seats: 25,
-    certificate_provided: true,
-  },
-
-  management: {
-    domain_name: "management",
-    domain_description:
-      "Work on product strategy, market research, and launch planning.",
-    skills_required: [
-      "Product Management",
-      "Market Research",
-      "Business Analysis",
-      "User Interviews"
-    ],
-    tools_used: ["Notion", "Figma", "Google Sheets"],
-    tags: ["Product", "Startup", "Business"],
-    start_date: new Date("2026-02-01"),
-    end_date: new Date("2026-03-31"),
-    application_deadline: new Date("2026-01-25"),
-    weekly_hours: 5,
-    duration: "8 Weeks",
-    difficulty_level: "Beginner",
-    marketplace_category: "Product & Strategy",
-    max_seats: 25,
-    certificate_provided: true,
-  },
-};
-
-
-export function CreateInternship({
+export function EditInternship({
   open,
   setOpen,
+  internship,
 }: {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  internship: Internship;
 }) {
   const [openCoHost, setOpenCoHost] = useState(false);
   const [mentors, setMentors] = useState<UserProfile[] | null>(null);
   const [selectedCoHost, setSelectedCoHost] = useState<UserProfile | null>(
     null
   );
+  const demo: z.infer<typeof internshipSchema> = {
+    internship_title: internship.internship_title ?? "",
+    description: internship.description ?? "",
+    price: Number(internship.price) || 0,
+
+    approval_required: internship.approval_required ?? false,
+    host_domain: internship.my_role.domain ?? "tech",
+
+    co_host_name: internship.co_host?.[0]?.full_name ?? "",
+
+    tech:
+      internship.my_role.domain === "tech"
+        ? {
+            domain_name: internship.domains.tech?.domain_name ?? "",
+            domain_description: internship.domains.tech?.domain_description ?? "",
+            skills_required: internship.domains.tech?.skills_required ?? [],
+            tools_used: internship.domains.tech?.tools_used ?? [],
+            tags: internship.domains.tech?.tags ?? [],
+            tasks: internship.domains.tech?.tasks ?? [],
+            deliverables: internship.domains.tech?.deliverables ?? [],
+            milestones: internship.domains.tech?.milestones ?? [],
+            start_date: new Date(
+              internship.domains.tech?.start_date ?? Date.now()
+            ),
+            end_date: new Date(internship.domains.tech?.end_date ?? Date.now()),
+            application_deadline: new Date(
+              internship.domains.tech?.application_deadline ?? Date.now()
+            ),
+            weekly_hours: Number(internship.domains.tech?.weekly_hours) || 0,
+            duration: internship.domains.tech?.duration ?? "",
+            difficulty_level:
+              internship.domains.tech?.difficulty_level ?? "Beginner",
+            marketplace_category:
+              internship.domains.tech?.marketplace_category ?? "",
+            max_seats: Number(internship.domains.tech?.max_seats) || 0,
+            certificate_provided:
+              internship.domains.tech?.certificate_provided ?? false,
+          }
+        : undefined,
+
+    management:
+      internship.my_role.domain === "management"
+        ? {
+            domain_name: internship.domains.management?.domain_name ?? "",
+            domain_description: internship.domains.management?.domain_description ?? "",
+            skills_required:
+              internship.domains.management?.skills_required ?? [],
+            tools_used: internship.domains.management?.tools_used ?? [],
+            tags: internship.domains.management?.tags ?? [],
+            tasks: internship.domains.management?.tasks ?? [],
+            deliverables: internship.domains.management?.deliverables ?? [],
+            milestones: internship.domains.management?.milestones ?? [],
+            start_date: new Date(
+              internship.domains.management?.start_date ?? Date.now()
+            ),
+            end_date: new Date(
+              internship.domains.management?.end_date ?? Date.now()
+            ),
+            application_deadline: new Date(
+              internship.domains.management?.application_deadline ?? Date.now()
+            ),
+            weekly_hours:
+              Number(internship.domains.management?.weekly_hours) || 0,
+            duration: internship.domains.management?.duration ?? "",
+            difficulty_level:
+              internship.domains.management?.difficulty_level ?? "Beginner",
+            marketplace_category:
+              internship.domains.management?.marketplace_category ?? "",
+            max_seats: Number(internship.domains.management?.max_seats) || 0,
+            certificate_provided:
+              internship.domains.management?.certificate_provided ?? false,
+          }
+        : undefined,
+  };
   const form = useForm<z.infer<typeof internshipSchema>>({
     resolver: zodResolver(internshipSchema),
     defaultValues: demo,
   });
 
   const hostDomain = form.watch("host_domain");
-  const coHostDomain = hostDomain === "tech" ? "management" : "tech";
 
   const search = async (value: string) => {
     form.setValue("co_host_name", value);
@@ -119,13 +133,11 @@ export function CreateInternship({
     setOpenCoHost(true);
     const res = await findMentors({ full_name: value });
     setMentors(res.data);
-    console.log(res.data);
   };
 
   const onSubmit = async (data: z.infer<typeof internshipSchema>) => {
+    const res = await editInternship(data, internship.id);
     console.log(data);
-    const res = await createInternship(data);
-    console.log(res);
     if (res) {
       setOpen(false);
     }
@@ -162,7 +174,14 @@ export function CreateInternship({
                     <FormItem>
                       <FormLabel>Price</FormLabel>
                       <FormControl>
-                        <Input placeholder="Price" type="number" {...field} />
+                        <Input
+                          placeholder="Price"
+                          type="number"
+                          {...field}
+                          onChange={(e) =>
+                            form.setValue("price", parseInt(e.target.value))
+                          }
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -208,7 +227,7 @@ export function CreateInternship({
                                 onClick={() => {
                                   setSelectedCoHost(mentor);
                                   setOpenCoHost(false);
-                                  form.setValue("co_host_id", mentor.id)
+                                  form.setValue("co_host_id", mentor.id);
                                 }}
                               >
                                 <CardContent>
@@ -241,7 +260,7 @@ export function CreateInternship({
                   <Card>
                     <CardContent className="flex items-center gap-2">
                       <Avatar>
-                        <AvatarImage src={UPLOAD_PHOTOS_URL + selectedCoHost.avatar} />
+                        <AvatarImage src={UPLOAD_PHOTOS_URL +selectedCoHost.avatar} />
                         <AvatarFallback>CN</AvatarFallback>
                       </Avatar>
                       <div>
@@ -272,31 +291,6 @@ export function CreateInternship({
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="host_domain"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Host Mentor Domain</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select domain" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="tech">Tech</SelectItem>
-                        <SelectItem value="management">Management</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <p className="text-sm text-muted-foreground">
-                      Co-host will be assigned to <b>{coHostDomain}</b>
-                    </p>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               {/* TECH DOMAIN */}
               {hostDomain === "tech" && (
                 <DomainSection form={form} domain="tech" title="Tech" />
@@ -310,14 +304,14 @@ export function CreateInternship({
                   title="Management"
                 />
               )}
-            <DialogFooter>
-              <Button type="submit" className=" w-full">
-                Create Internship
-              </Button>
-              <DialogClose asChild>
-                <Button variant="outline">Cancel</Button>
-              </DialogClose>
-            </DialogFooter>
+              <DialogFooter>
+                <Button type="submit" className=" w-full">
+                  Save changes
+                </Button>
+                <DialogClose asChild>
+                  <Button variant="outline">Cancel</Button>
+                </DialogClose>
+              </DialogFooter>
             </div>
           </form>
         </Form>

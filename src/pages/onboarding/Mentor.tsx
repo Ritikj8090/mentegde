@@ -34,10 +34,10 @@ import {
 import { z } from "zod";
 import { motion } from "framer-motion";
 import ReviewInfo from "@/components/onboarding/ReviewInfo";
-import { oboardingUser } from "@/utils/auth";
 import Preference from "@/components/onboarding/Preference";
 import { Toaster } from "@/components/Toaster";
 import { tokenUser } from "@/index";
+import { mentorOnbording } from "@/utils/mentorAuth";
 
 const steps = [
   {
@@ -157,8 +157,8 @@ export default function MentorOnboarding({ user }: { user: tokenUser }) {
         ...Preferenceform.getValues(),
       };
       console.log("Form submitted:", data);
-      const result = await oboardingUser({ ...data });
-      if(result){
+      const result = await mentorOnbording(data);
+      if (result) {
         setOnboardedComplete(true);
       }
       console.log(result);
@@ -205,9 +205,7 @@ export default function MentorOnboarding({ user }: { user: tokenUser }) {
       }
     } else if (currentStep === 3) {
       // Professional Experience validation
-      const result = ExperienceSchema.safeParse(
-        Experienceform.getValues()
-      );
+      const result = ExperienceSchema.safeParse(Experienceform.getValues());
       if (!result.success) {
         result.error.errors.forEach((error) => {
           const field = error
@@ -272,123 +270,129 @@ export default function MentorOnboarding({ user }: { user: tokenUser }) {
   };
   return (
     <>
-    <div className="container mx-auto py-10">
-      {/* Header */}
-      <section className="flex flex-col items-center text-center mb-16">
-        <motion.h1
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          className="text-4xl md:text-5xl font-extrabold"
-        >
-          Welcome to Our Platform
-        </motion.h1>
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.7 }}
-          className="mt-4 text-lg text-gray-300 max-w-2xl"
-        >
-          Let's get you set up with a personalized experience
-        </motion.p>
-      </section>
-      {/* Progress Bar */}
-      <div className="mb-8">
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium text-primary/50">
-            Step {currentStep} of {steps.length}
-          </span>
-          <span className="text-sm text-primary/50">
-            {Math.round(progress)}% Complete
-          </span>
+      <div className="container mx-auto py-10">
+        {/* Header */}
+        <section className="flex flex-col items-center text-center mb-16">
+          <motion.h1
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+            className="text-4xl md:text-5xl font-extrabold"
+          >
+            Welcome to Our Platform
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.7 }}
+            className="mt-4 text-lg text-gray-300 max-w-2xl"
+          >
+            Let's get you set up with a personalized experience
+          </motion.p>
+        </section>
+        {/* Progress Bar */}
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm font-medium text-primary/50">
+              Step {currentStep} of {steps.length}
+            </span>
+            <span className="text-sm text-primary/50">
+              {Math.round(progress)}% Complete
+            </span>
+          </div>
+          <Progress value={progress} className="h-2" />
         </div>
-        <Progress value={progress} className="h-2" />
-      </div>
 
-      {/* Step Indicators */}
-      <div className="flex justify-between mb-8">
-        {steps.map((step) => {
-          const Icon = step.icon;
-          const isActive = currentStep === step.id;
-          const isCompleted = currentStep > step.id;
+        {/* Step Indicators */}
+        <div className="flex justify-between mb-8">
+          {steps.map((step) => {
+            const Icon = step.icon;
+            const isActive = currentStep === step.id;
+            const isCompleted = currentStep > step.id;
 
-          return (
-            <div key={step.id} className="flex flex-col items-center">
-              <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${
-                  isCompleted
-                    ? "bg-green-500 text-white"
-                    : isActive
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200 text-gray-400"
-                }`}
-              >
-                {isCompleted ? (
-                  <Check className="w-5 h-5" />
-                ) : (
-                  <Icon className="w-5 h-5" />
-                )}
-              </div>
-              <div className="text-center">
+            return (
+              <div key={step.id} className="flex flex-col items-center">
                 <div
-                  className={`text-xs font-medium ${
-                    isActive ? "text-blue-600" : "text-gray-500"
+                  className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${
+                    isCompleted
+                      ? "bg-green-500 text-white"
+                      : isActive
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200 text-gray-400"
                   }`}
                 >
-                  {step.title}
+                  {isCompleted ? (
+                    <Check className="w-5 h-5" />
+                  ) : (
+                    <Icon className="w-5 h-5" />
+                  )}
+                </div>
+                <div className="text-center">
+                  <div
+                    className={`text-xs font-medium ${
+                      isActive ? "text-blue-600" : "text-gray-500"
+                    }`}
+                  >
+                    {step.title}
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
-      {/* Main Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            {React.createElement(steps[currentStep - 1].icon, {
-              className: "w-5 h-5",
-            })}
-            {steps[currentStep - 1].title}
-          </CardTitle>
-          <CardDescription>
-            {steps[currentStep - 1].description}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div key={currentStep}>{RenderStepContent()}</div>
+            );
+          })}
+        </div>
+        {/* Main Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              {React.createElement(steps[currentStep - 1].icon, {
+                className: "w-5 h-5",
+              })}
+              {steps[currentStep - 1].title}
+            </CardTitle>
+            <CardDescription>
+              {steps[currentStep - 1].description}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div key={currentStep}>{RenderStepContent()}</div>
 
-          {/* Navigation Buttons */}
-          <div className="flex justify-between mt-8">
-            <Button
-              variant="outline"
-              onClick={prevStep}
-              disabled={currentStep === 1}
-              className="flex items-center gap-2"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              Previous
-            </Button>
-
-            {currentStep === steps.length ? (
+            {/* Navigation Buttons */}
+            <div className="flex justify-between mt-8">
               <Button
-                onClick={handleSubmit}
+                variant="outline"
+                onClick={prevStep}
+                disabled={currentStep === 1}
                 className="flex items-center gap-2"
               >
-                <Check className="w-4 h-4" />
-                Complete Onboarding
+                <ChevronLeft className="w-4 h-4" />
+                Previous
               </Button>
-            ) : (
-              <Button onClick={nextStep} className="flex items-center gap-2">
-                Next
-                <ChevronRight className="w-4 h-4" />
-              </Button>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-    <Toaster open={onboadedComplete} />
+
+              {currentStep === steps.length ? (
+                <Button
+                  onClick={handleSubmit}
+                  className="flex items-center gap-2"
+                >
+                  <Check className="w-4 h-4" />
+                  Complete Onboarding
+                </Button>
+              ) : (
+                <Button onClick={nextStep} className="flex items-center gap-2">
+                  Next
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+      <Toaster
+        open={onboadedComplete}
+        href="/dashboad"
+        title="Onboarding Complete"
+        description="Your onboarding process is now complete."
+        icon={<Check className="w-4 h-4" />}
+      />
     </>
   );
 }

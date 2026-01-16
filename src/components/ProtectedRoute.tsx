@@ -8,7 +8,7 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
-  const { isAuthenticated, isLoading, user, role } = useSelector(
+  const { isAuthenticated, isLoading, user } = useSelector(
     (state: RootState) => state.auth
   );
   const location = useLocation();
@@ -27,7 +27,7 @@ const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
     return <Navigate to="/onboarding" replace />;
   }
 
-  if (allowedRoles && !allowedRoles.includes(role!)) {
+  if (allowedRoles && !allowedRoles.includes(user?.role!)) {
     return <Navigate to="/access-denied" replace />; // Redirect unauthorized users
   }
 

@@ -20,14 +20,14 @@ const InternshipPage = () => {
         const internshipsRequests = await getCurrentMentorInternshipsRequests();
         setInternships(internships);
         setInternshipsRequests(internshipsRequests);
-        console.log(internshipsRequests);
+        console.log(internships);
       } catch (error) {
         console.error(error);
       }
     };
     fetchData();
   }, []);
-
+  console.log(internshipsRequests);
   if(!internships || !internshipsRequests)
     return <Loading />
 

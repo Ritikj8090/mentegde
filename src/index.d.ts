@@ -82,7 +82,6 @@ export interface FrontendUserProfile extends UserProfile {
     owner_type: "user" | "mentor";
     language: string;
   }[];
-  
 }
 
 export interface UserProfile {
@@ -115,22 +114,36 @@ export interface UserProfile {
   github_link: string;
 }
 
+export type Interns = {
+  id: string;
+  full_name: string;
+  email: string;
+  avatar: string | null;
+
+  domain_name: string;
+
+  created_at: string; // ISO timestamp
+  joined_at: string;  // ISO timestamp
+};
+
+
 export type DomainDetails = {
-  description: string;
+  id: string;
+  domain_name: string;
+  domain_description: string;
   skills_required: string[];
   tools_used: string[];
   tags: string[];
-  tasks: string[];
-  deliverables: string[];
-  milestones: string[];
   weekly_hours: number;
   duration: string;
-  start_date: string; // YYYY-MM-DD
-  end_date: string;
-  application_deadline: string;
+  start_date: Date; // YYYY-MM-DD
+  end_date: Date;
+  application_deadline: Date;
   difficulty_level: "Beginner" | "Intermediate" | "Advanced";
   marketplace_category: string;
   max_seats: number;
+  join_count: number;
+  seats_left: number;
   certificate_provided: boolean;
 };
 
@@ -140,6 +153,7 @@ export type Mentor = {
   avatar: string | null;
   role: "host" | "co-host";
   domain: "tech" | "management";
+  invite_status: "pending" | "accepted" | "rejected";
 };
 
 export type Internship = {
@@ -147,7 +161,13 @@ export type Internship = {
   internship_title: string;
   description: string;
   price: string; // returned as string from Postgres (numeric)
-  status: "draft" | "published" | "archived";
+
+  host_domain: string;
+
+  co_host_name: string;
+  co_host_id: string;
+
+  status: "draft" | "published" | "closed" | "deleted" | "submitted";
   approval_required: boolean;
   created_at: string;
 
@@ -159,10 +179,158 @@ export type Internship = {
   my_role: {
     role: "host" | "co-host";
     domain: "tech" | "management";
+    invite_status: "pending" | "accepted" | "rejected";
   };
 
   host: Mentor[];
   co_host: Mentor[];
+};
+
+export type Workboard = {
+  id: string;
+  internship_id: string;
+  domain_name: string;
+  created_by: string;
+  title: string;
+  description: string | null;
+  created_at: string; // ISO timestamp
+  updated_at: string; // ISO timestamp
+  milestones: Milestone[];
+};
+
+
+export type Milestone = {
+  id: string;
+  workboard_id: string;
+
+  title: string;
+  description: string;
+  order_index: number;
+
+  start_date: string; // YYYY-MM-DD
+  due_date: string;   // YYYY-MM-DD
+  status: "planned" | "active" | "archived";
+
+  concepts: Concept[];
+  tasks: Task[];
+  assignments: Assignment[];
+
+  created_at: string; // ISO timestamp
+  updated_at: string; // ISO timestamp
+};
+
+export type Concept = {
+  id: string;
+  milestone_id: string;
+
+  title: string;
+  description: string;
+  status: "draft" | "published";
+  order_index: number;
+
+  progress: Progress;
+
+  created_at: string;
+  updated_at: string;
+};
+
+export type Task = {
+  id: string;
+  milestone_id: string;
+
+  title: string;
+  description: string;
+  status: "todo" | "in_progress" | "blocked" | "done";
+
+  assigned_to: string | null;
+  assignees: string[];
+
+  progress: Progress;
+
+  created_by: string;
+
+  due_date: string; // YYYY-MM-DD
+  completed_at: string | null;
+
+  created_at: string;
+  updated_at: string;
+};
+
+export type Assignment = {
+  id: string;
+  milestone_id: string;
+
+  title: string;
+  description: string;
+  status: "draft" | "published";
+
+  max_score: number;
+  due_date: string; // YYYY-MM-DD
+
+  created_by: string;
+  assignees: string[];
+
+  created_at: string;
+  updated_at: string;
+};
+
+export type Progress = {
+  status: string | null;
+  completed_at: string | null;
+  updated_at: string | null;
+};
+
+export type OngoingInternshipsForIntern = {
+  joined_id: string;
+  joined_at: string; // ISO timestamp
+
+  internship_id: string;
+  internship_title: string;
+  description: string;
+
+  domain_id: string;
+  domain_name: string;
+  domain_title: string | null;
+  domain_description: string;
+
+  marketplace_category: string;
+  difficulty_level: "Beginner" | "Intermediate" | "Advanced";
+
+  duration: string; // e.g. "8 Weeks"
+  weekly_hours: number;
+
+  start_date: string; // ISO date
+  end_date: string;   // ISO date
+  application_deadline: string; // ISO date
+
+  status: "draft" | "published" | "archived";
+  approval_required: boolean;
+
+  price: string; // backend sends as string
+  max_seats: number;
+  seats_left: number;
+  join_count: number;
+
+  progress_percent: string;
+
+  total_items: string;
+  completed_items: string;
+
+  concepts_total: string;
+  concepts_completed: string;
+
+  tasks_total: string;
+  tasks_assigned: string;
+  tasks_completed: string;
+
+  assignments_total: string;
+  assignments_assigned: string;
+  assignments_submitted: string;
+  assignments_graded: string;
+
+  created_at: string; // ISO timestamp
+
+  workboard_id: string;
 };
 
 

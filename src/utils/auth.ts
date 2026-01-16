@@ -20,8 +20,8 @@ export const userLogout = async () => {
   return response.data;
 };
 
-export const oboardingUser = async ({...data}:UserProfile) => {
-  const response = await api.put("/auth/oboarding-user", { ...data });
+export const oboardingUser = async (data:any) => {
+  const response = await api.put("/auth/oboarding-user", data);
   return response.data;
 }
 
