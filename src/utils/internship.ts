@@ -103,6 +103,43 @@ export const createConcepts = async (
   return result.data;
 };
 
+export const updateConceptProgress = async (
+  conceptId: string,
+  status: "completed" | "pending"
+) => {
+  const result = await api.post(
+    `/internships/intern/concepts/${conceptId}/progress`,
+    { status }
+  );
+  return result.data;
+};
+
+export const uploadConceptFiles = async (conceptId: string, files: File[]) => {
+  const formData = new FormData();
+  files.forEach((file) => formData.append("concept_files", file));
+
+  const result = await api.post(
+    `/internships/concepts/${conceptId}/files`,
+    formData,
+    {
+      headers: { "Content-Type": "multipart/form-data" },
+    }
+  );
+  return result.data;
+};
+
+export const getConceptFiles = async (conceptId: string) => {
+  const result = await api.get(`/internships/concepts/${conceptId}/files`);
+  return result.data;
+};
+
+export const deleteConceptFile = async (conceptId: string, fileId: string) => {
+  const result = await api.delete(
+    `/internships/concepts/${conceptId}/files/${fileId}`
+  );
+  return result.data;
+};
+
 export const createTasks = async (
   milestoneId: string,
   data: z.infer<typeof tasksSchema>
@@ -170,4 +207,74 @@ export const joinInternship = async (
 export const getOngoingInternshipsForIntern = async () => {
   const result = await api.get(`/internships/intern/ongoing-with-progress`);
   return result.data;
-}
+};
+
+export const updateConcept = async (
+  conceptId: string,
+  data: z.infer<typeof conceptsSchema>
+) => {
+  const result = await api.put(`/internships/concepts/${conceptId}`, data);
+  return result.data;
+};
+
+export const updateTask = async (
+  taskId: string,
+  data: z.infer<typeof tasksSchema>
+) => {
+  const result = await api.put(`/internships/tasks/${taskId}`, data);
+  return result.data;
+};
+
+export const updateTaskProgress = async (
+  taskId: string,
+  status: "todo" | "done"
+) => {
+  const result = await api.post(
+    `/internships/intern/tasks/${taskId}/progress`,
+    { status }
+  );
+  return result.data;
+};
+
+export const updateAssignment = async (
+  assignmentId: string,
+  data: z.infer<typeof assignmentsSchema>
+) => {
+  const result = await api.put(
+    `/internships/assignments/${assignmentId}`,
+    data
+  );
+  return result.data;
+};
+
+export const submitAssignment = async (
+  assignmentId: string,
+  text_content: string,
+  status?: string
+) => {
+  const result = await api.post(
+    `/internships/intern/assignments/${assignmentId}/submit`,
+    {
+      status,
+      text_content,
+    }
+  );
+  return result.data;
+};
+
+export const uploadAssignmentFiles = async (
+  assignmentId: string,
+  files: File[]
+) => {
+  const formData = new FormData();
+  files.forEach((file) => formData.append("assignment_submission_files", file));
+
+  const result = await api.post(
+    `/internships/assignments/${assignmentId}/submit-files`,
+    formData,
+    {
+      headers: { "Content-Type": "multipart/form-data" },
+    }
+  );
+  return result.data;
+};

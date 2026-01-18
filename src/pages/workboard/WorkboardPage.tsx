@@ -9,6 +9,28 @@ import { Workboard } from "@/index";
 import Loading from "@/components/Loading";
 import { RootState } from "@/components/store/store";
 import { useSelector } from "react-redux";
+import { File, FileText, ImageIcon } from "lucide-react";
+
+interface FileAttachment {
+  id: string;
+  name: string;
+  type: "image" | "pdf" | "document" | "other";
+  url: string;
+  preview?: string;
+}
+
+export const getFileIcon = (type: FileAttachment["type"]) => {
+  switch (type) {
+    case "image":
+      return <ImageIcon className="h-4 w-4 text-blue-400" />;
+    case "pdf":
+      return <FileText className="h-4 w-4 text-red-400" />;
+    case "document":
+      return <FileText className="h-4 w-4 text-blue-400" />;
+    default:
+      return <File className="h-4 w-4 text-muted-foreground" />;
+  }
+};
 
 const WorkboardPage = () => {
   const internshipId = window.location.pathname.split("/")[2];

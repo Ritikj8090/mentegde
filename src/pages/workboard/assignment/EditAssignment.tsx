@@ -7,10 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  assignmentsDefaultValues,
-  assignmentsSchema,
-} from "./schema";
+import { assignmentsSchema } from "../schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -23,13 +20,13 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { createAssignments, getAllDomainIntern } from "@/utils/internship";
+import { getAllDomainIntern, updateAssignment } from "@/utils/internship";
 import { Textarea } from "@/components/ui/textarea";
 import {
   NativeSelect,
   NativeSelectOption,
 } from "@/components/ui/native-select";
-import { Interns } from "@/index";
+import { Assignment, Interns } from "@/index";
 import React from "react";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -47,16 +44,18 @@ interface AddConceptsProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   internshipId: string;
-  milestoneId: string;
   domain_name: string;
+  assignmentsData: Assignment;
+  setAssignmentsData: React.Dispatch<React.SetStateAction<Assignment[]>>;
 }
 
-export function AddAssignments({
+export function EditAssignments({
   open,
   setOpen,
   internshipId,
-  milestoneId,
   domain_name,
+  assignmentsData,
+  setAssignmentsData,
 }: AddConceptsProps) {
   const [allInterns, setAllInterns] = React.useState<Interns[] | null>(null);
 
@@ -75,7 +74,14 @@ export function AddAssignments({
 
   const form = useForm<z.infer<typeof assignmentsSchema>>({
     resolver: zodResolver(assignmentsSchema),
-    defaultValues: assignmentsDefaultValues,
+    defaultValues: {
+      title: assignmentsData.title,
+      description: assignmentsData.description,
+      due_date: new Date(assignmentsData.due_date),
+      status: assignmentsData.status,
+      max_score: assignmentsData.max_score,
+      assigned_to_ids: assignmentsData.assignees,
+    },
   });
 
   const handleSelectAll = () => {
@@ -98,22 +104,51 @@ export function AddAssignments({
   const isAllSelected =
     form.watch("assigned_to_ids").length === allInterns?.length;
 
+  const normalizeAssignment = (assignment: any) => ({
+    ...assignment,
+
+    // normalize date
+    due_date: assignment.due_date?.split("T")[0] ?? null,
+
+    // normalize assignees (from form values or backend default)
+    assignees: assignment.assignees ?? [],
+
+    // inject default progress
+    progress: {
+      id: null,
+      status: "not_started",
+      score: null,
+      feedback: null,
+      submitted_at: null,
+      graded_at: null,
+      updated_at: null,
+    },
+  });
+
   const onSubmit = async (values: z.infer<typeof assignmentsSchema>) => {
-    const res = await createAssignments(milestoneId, values);
-    if (res) {
-      setOpen(false);
-    }
+    const res = await updateAssignment(assignmentsData.id, values);
     console.log(res);
+    if (!res) return;
+
+    const normalizedAssignment = normalizeAssignment(res.assignment);
+
+    setAssignmentsData((prev) =>
+      prev.map((assignment) =>
+        assignment.id === normalizedAssignment.id ? normalizedAssignment : assignment
+      )
+    );
+    setOpen(false);
   };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="min-w-150">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <DialogHeader>
-              <DialogTitle>Add Assignment</DialogTitle>
+              <DialogTitle>Edit Assignment</DialogTitle>
               <DialogDescription>
-                Add a new assignment to the milestone
+                Edit an assignment to the milestone
               </DialogDescription>
             </DialogHeader>
             <div className=" space-y-5">
@@ -224,7 +259,6 @@ export function AddAssignments({
                       <FormControl>
                         <Input
                           placeholder="Enter a max score"
-                          
                           {...field}
                           value={field.value ?? ""}
                           onChange={(e) =>
@@ -307,7 +341,7 @@ export function AddAssignments({
             </div>
             <DialogFooter className=" grid grid-cols-3">
               <Button type="submit" className=" w-full col-span-2">
-                Add Task
+                Edit Assignment
               </Button>
               <DialogClose asChild>
                 <Button variant="outline">Cancel</Button>

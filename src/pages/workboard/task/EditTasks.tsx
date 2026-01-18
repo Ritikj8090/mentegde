@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { tasksDefaultValues, tasksSchema } from "./schema";
+import { tasksSchema } from "../schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -20,13 +20,13 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { createTasks, getAllDomainIntern } from "@/utils/internship";
+import { getAllDomainIntern, updateTask } from "@/utils/internship";
 import { Textarea } from "@/components/ui/textarea";
 import {
   NativeSelect,
   NativeSelectOption,
 } from "@/components/ui/native-select";
-import { Interns } from "@/index";
+import { Interns, Task } from "@/index";
 import React from "react";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -44,16 +44,18 @@ interface AddConceptsProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   internshipId: string;
-  milestoneId: string;
   domain_name: string;
+  tasksData: Task;
+  setTasksData: React.Dispatch<React.SetStateAction<Task[]>>;
 }
 
-export function AddTasks({
+export function EditTasks({
   open,
   setOpen,
   internshipId,
-  milestoneId,
   domain_name,
+  tasksData,
+  setTasksData,
 }: AddConceptsProps) {
   const [allInterns, setAllInterns] = React.useState<Interns[] | null>(null);
 
@@ -72,7 +74,13 @@ export function AddTasks({
 
   const form = useForm<z.infer<typeof tasksSchema>>({
     resolver: zodResolver(tasksSchema),
-    defaultValues: tasksDefaultValues,
+    defaultValues: {
+      title: tasksData.title,
+      description: tasksData.description,
+      status: tasksData.status,
+      assigned_to_ids: tasksData.assignees,
+      due_date: new Date(tasksData.due_date),
+    },
   });
 
   const handleSelectAll = () => {
@@ -95,13 +103,37 @@ export function AddTasks({
   const isAllSelected =
     form.watch("assigned_to_ids").length === allInterns?.length;
 
+  const normalizeTask = (task: any) => ({
+    ...task,
+
+    assignees: task.assigned_to ? [task.assigned_to] : [],
+
+    progress: {
+      status: task.status,
+      completed_at: task.completed_at ?? null,
+      updated_at: null,
+    },
+
+    // normalize date → YYYY-MM-DD
+    due_date: task.due_date?.split("T")[0] ?? null,
+  });
   const onSubmit = async (values: z.infer<typeof tasksSchema>) => {
-    const res = await createTasks(milestoneId, values);
-    if (res) {
-      setOpen(false);
-    }
-    console.log(res);
+    const res = await updateTask(tasksData.id, values);
+
+    if (!res?.task) return;
+
+    const normalizedTask = normalizeTask(res.task);
+
+    setTasksData((prev) =>
+      prev.map((task) =>
+        task.id === normalizedTask.id ? normalizedTask : task
+      )
+    );
+
+    setOpen(false);
+    console.log(normalizedTask);
   };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="min-w-150">

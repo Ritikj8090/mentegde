@@ -225,7 +225,7 @@ export type Concept = {
 
   title: string;
   description: string;
-  status: "draft" | "published";
+  status: "draft" | "published" | "archived";
   order_index: number;
 
   progress: Progress;
@@ -270,9 +270,22 @@ export type Assignment = {
   created_by: string;
   assignees: string[];
 
-  created_at: string;
-  updated_at: string;
+  progress: AssignmentProgress;
+
+  created_at: string; // ISO timestamp
+  updated_at: string; // ISO timestamp
 };
+
+export type AssignmentProgress = {
+  id: string | null;
+  status: "not_started" | "submitted" | "graded";
+  score: number | null;
+  feedback: string | null;
+  submitted_at: string | null;
+  graded_at: string | null;
+  updated_at: string | null;
+};
+
 
 export type Progress = {
   status: string | null;
@@ -332,6 +345,22 @@ export type OngoingInternshipsForIntern = {
 
   workboard_id: string;
 };
+
+export type ConceptFile = {
+  id: string;
+
+  concept_id: string;
+
+  file_name: string;
+  file_type: string; // e.g. "image/jpeg"
+  file_url: string;
+
+  uploaded_by_mentor_id: string | null;
+  uploaded_by_user_id: string | null;
+
+  created_at: string; // ISO timestamp
+};
+
 
 
 declare interface JwtUserPayload {

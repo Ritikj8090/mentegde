@@ -68,7 +68,7 @@ export const assignmentsSchema = z.object({
   assigned_to_ids: z.array(z.string()).min(1, {
     message: "Please select at least one user to assign the assignment to.",
   }),
-  assign_all: z.boolean(),
+  assign_all: z.boolean().optional(),
   due_date: z.date({
     required_error: "Please select a due date for the milestone.",
   }),

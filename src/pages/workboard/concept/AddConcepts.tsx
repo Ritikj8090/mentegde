@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { conceptsDefaultValues, conceptsSchema } from "./schema";
+import { conceptsDefaultValues, conceptsSchema } from "../schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -26,17 +26,20 @@ import {
   NativeSelect,
   NativeSelectOption,
 } from "@/components/ui/native-select";
+import { Concept } from "@/index";
 
 interface AddConceptsProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   milestoneId: string;
+  setConceptsData: React.Dispatch<React.SetStateAction<Concept[]>>;
 }
 
 export function AddConcepts({
   open,
   setOpen,
   milestoneId,
+  setConceptsData,
 }: AddConceptsProps) {
   const form = useForm<z.infer<typeof conceptsSchema>>({
     resolver: zodResolver(conceptsSchema),
@@ -44,10 +47,28 @@ export function AddConcepts({
   });
   const onSubmit = async (values: z.infer<typeof conceptsSchema>) => {
     const res = await createConcepts(milestoneId, values);
-    if (res) {
-      setOpen(false);
-    }
+
+    if (!res?.concept) return;
+
+    const normalizedConcept = {
+      ...res.concept,
+
+      // ✅ add progress (UI expects this)
+      progress: {
+        status: "not_started",
+        completed_at: null,
+        updated_at: null,
+      },
+
+      // ✅ keep dates consistent (use backend value or convert)
+      created_at: res.concept.created_at,
+      updated_at: res.concept.updated_at,
+    };
+
+    setConceptsData((prev) => [...prev, normalizedConcept]);
+    setOpen(false);
   };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="min-w-150">

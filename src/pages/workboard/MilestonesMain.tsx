@@ -1,7 +1,7 @@
-import MilestonesConcept from "./MilestonesConcept";
-import MilestonesTask from "./MilestonesTask";
-import MilestonesAssingment from "./MilestonesAssingment";
+import MilestonesTask from "./task/MilestonesTask";
+import MilestonesAssingment from "./assignment/MilestonesAssingment";
 import { Milestone } from "@/index";
+import MilestonesConcept from "./concept/MilestonesConcept";
 
 interface MilestonesMainProps {
   milestoneData: Milestone | null;
