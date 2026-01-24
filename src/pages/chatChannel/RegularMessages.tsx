@@ -228,7 +228,10 @@ const RegularMessages = ({ messageList }: RegularMessagesProps) => {
                     </div> */}
                   </div>
                   {message.files && message.files.length > 0 && (
-                    <div className="mt-2 space-y-2">
+                    <div className={cn(
+                          "rounded-xl px-3 py-2 max-w-[75%] w-fit mt-2 space-y-2",
+                          isCurrentUser ? " ml-auto" : "",
+                        )}>
                       {message.files.map((attachment, i) => (
                         <div
                           key={i}
