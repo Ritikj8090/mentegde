@@ -8,11 +8,11 @@ declare interface tokenUser {
 }
 
 export interface Education {
-  highest_degree: string;
   institution: string;
   field_of_study: string;
-  graduation_year: string; // can be number later
-  gpa?: string; // keep string to allow "N/A"
+  highest_degree: string;
+  graduation_year: string; // YYYY
+  gpa: string; // stored as string (e.g. "4.0")
 }
 
 export interface Experience {
@@ -31,57 +31,34 @@ export interface Certificate {
   end_date: Date; // optional
 }
 
-export interface FrontendUserProfile extends UserProfile {
+export interface FrontEndUserProfile {
   id: string;
-  role: "user" | "mentor";
-  skills: {
-    id: string;
-    owner_id: string;
-    owner_type: "user" | "mentor";
-    skill: string;
-  }[];
-  experiences: {
-    id: string;
-    owner_id: string;
-    owner_type: "user" | "mentor";
-    company: string;
-    location: string;
-    experience: string;
-    industry: string;
-    title: string;
-  }[];
-  educations: {
-    id: string;
-    owner_id: string;
-    owner_type: "user" | "mentor";
-    highest_degree: string;
-    institution: string;
-    field_of_study: string;
-    graduation_year: string; // can be number later
-    gpa?: string; // keep string to allow "N/A"
-  }[];
-  certificates: {
-    id: string;
-    owner_id: string;
-    owner_type: "user" | "mentor";
-    name: string;
-    provider: string;
-    link: string;
-    start_date: Date; // ISO date
-    end_date: Date; // optional
-  }[];
-  interests: {
-    id: string;
-    owner_id: string;
-    owner_type: "user" | "mentor";
-    interest: string;
-  }[];
-  languages: {
-    id: string;
-    owner_id: string;
-    owner_type: "user" | "mentor";
-    language: string;
-  }[];
+  full_name: string;
+  email: string;
+  role: "user" | "mentor" | "admin";
+  gender: "male" | "female" | "others";
+  date_of_birth: string; // ISO date string
+  avatar: string;
+  phone_number: string;
+  bio: string;
+  current_city: string;
+  current_state: string;
+  current_status: "fresher" | "employed" | "self-employed" | "other";
+  resume_link: string;
+  portfolio_link: string;
+  linkedin_link: string;
+  github_link: string;
+  hear_about: string;
+
+  educations: Education[];
+  experience: Experience[];
+  skills: string[];
+  languages: string[];
+  certificates: Certificate[];
+  interests: string[];
+
+  created_at: string; // ISO date string
+  updated_at: string; // ISO date string
 }
 
 export interface UserProfile {
@@ -114,6 +91,17 @@ export interface UserProfile {
   github_link: string;
 }
 
+export type OnlineStatus = {
+  id: string;
+  full_name: string;
+  avatar: string;
+  status: "online" | "away" | "offline";
+  role: "user" | "mentor";
+  domain: "tech" | "management" | "other";
+  last_seen?: Date;
+
+}
+
 export type Interns = {
   id: string;
   full_name: string;
@@ -123,12 +111,10 @@ export type Interns = {
   domain_name: string;
 
   created_at: string; // ISO timestamp
-  joined_at: string;  // ISO timestamp
+  joined_at: string; // ISO timestamp
 };
 
-
-export type DomainDetails = {
-  id: string;
+export type DomainDetailsProps = {
   domain_name: string;
   domain_description: string;
   skills_required: string[];
@@ -139,13 +125,17 @@ export type DomainDetails = {
   start_date: Date; // YYYY-MM-DD
   end_date: Date;
   application_deadline: Date;
-  difficulty_level: "Beginner" | "Intermediate" | "Advanced";
+  difficulty_level: "beginner" | "intermediate" | "advanced";
   marketplace_category: string;
   max_seats: number;
+};
+
+interface DomainDetails extends DomainDetailsProps {
+  id: string;
   join_count: number;
   seats_left: number;
   certificate_provided: boolean;
-};
+}
 
 export type Mentor = {
   id: string;
@@ -198,7 +188,6 @@ export type Workboard = {
   milestones: Milestone[];
 };
 
-
 export type Milestone = {
   id: string;
   workboard_id: string;
@@ -208,7 +197,7 @@ export type Milestone = {
   order_index: number;
 
   start_date: string; // YYYY-MM-DD
-  due_date: string;   // YYYY-MM-DD
+  due_date: string; // YYYY-MM-DD
   status: "planned" | "active" | "archived";
 
   concepts: Concept[];
@@ -286,7 +275,6 @@ export type AssignmentProgress = {
   updated_at: string | null;
 };
 
-
 export type Progress = {
   status: string | null;
   completed_at: string | null;
@@ -313,7 +301,7 @@ export type OngoingInternshipsForIntern = {
   weekly_hours: number;
 
   start_date: string; // ISO date
-  end_date: string;   // ISO date
+  end_date: string; // ISO date
   application_deadline: string; // ISO date
 
   status: "draft" | "published" | "archived";
@@ -361,7 +349,20 @@ export type ConceptFile = {
   created_at: string; // ISO timestamp
 };
 
+export type AssignmentFile = {
+  id: string;
 
+  concept_id: string;
+
+  file_name: string;
+  file_type: string; // e.g. "image/jpeg"
+  file_url: string;
+
+  uploaded_by_mentor_id: string | null;
+  uploaded_by_user_id: string | null;
+
+  created_at: string; // ISO timestamp
+};
 
 declare interface JwtUserPayload {
   id: string;
@@ -393,35 +394,113 @@ declare interface SessionData {
   stream_url: string | null;
 }
 
-declare interface ChatMessage {
-  id: string;
-  sessionId: string;
-  senderId: string;
-  senderRole: "mentor" | "user";
-  senderName: string;
-  text?: string;
-  file?: string;
-  timestamp: string;
-}
-
-declare interface Conversation {
-  id: string;
-  user1_id: string;
-  user2_id: string;
-  user1_name: string;
-  user2_name: string;
-  user1_avatar?: string;
-  user2_avatar?: string;
-  last_message: string;
-  last_message_at: string;
-  online: boolean;
-  F;
-}
-
 declare interface Message {
   id: string;
   text: string;
   senderId: string;
   timestamp: string;
   read: boolean;
+}
+
+export interface FileAttachment {
+  id: string;
+  name: string;
+  size: number;
+  type: string;
+  url: string;
+}
+
+export interface ChatConversation {
+  id: string;
+  participants: ChatUser[];
+  lastMessage?: ChatMessage;
+  unreadCount: number;
+}
+
+export type Conversation = {
+  conversation_id: string;
+
+  user1_id: string;
+  user1_role: "user" | "mentor";
+  user1_name: string;
+  user1_avatar: string;
+
+  user2_id: string;
+  user2_role: "user" | "mentor";
+  user2_name: string;
+  user2_avatar: string;
+
+  last_message: string | null;
+  last_message_at: string | null;
+
+  updated_at: string;
+};
+
+type ChatUser = {
+  conversation_id: string;
+  id: string;
+  role: "user" | "mentor";
+  name: string;
+  avatar: string;
+  last_message: string | null;
+  last_message_at: string | null;
+};
+
+export type ChatMessage = {
+  id: string;
+  conversation_id: string;
+
+  sender_id: string;
+  sender_role: "user" | "mentor";
+  sender_name: string;
+  sender_avatar: string;
+
+  message: string;
+  status: "sent" | "delivered" | "read";
+
+  created_at: string;
+  delivered_at: string | null;
+  updated_at: string;
+
+  files: ChatFile[];
+};
+
+export type ChatFile = {
+  id?: string;
+  name?: string;
+  url?: string;
+  type?: string; // image, pdf, doc, etc.
+  size?: number;
+};
+
+export interface Coupon {
+  id: string;
+  code: string;
+  percent_off: number;      // e.g. 10 = 10% off
+  is_active: boolean;
+  max_uses: number;
+  used_count: number;
+  expires_at: string;       // ISO date string
+  created_at: string;       // ISO date string
+  updated_at: string;       // ISO date string
+}
+
+export interface ChannelListType {
+  id: string;
+  channel_type: "general" | "tech" | "management";
+  name: string;
+  domain_name: "tech" | "management" | null;
+  created_at: string; // ISO date string
+}
+
+export interface MessageListType {
+  id: string;
+  channel_id: string;
+  sender_id: string;
+  sender_role: "user" | "mentor";
+  sender_name: string;
+  sender_avatar: string;
+  message: string;
+  created_at: string; // ISO date string
+  files: ChatFile[];
 }

@@ -5,7 +5,7 @@ import {
   ExperienceSchema,
   PersonalSchema,
   PreferencesSchema,
-} from "./schema";
+} from "../../pages/onboarding/schema";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import {
@@ -32,12 +32,8 @@ import { UPLOAD_PHOTOS_URL } from "../config/CommonBaseUrl";
 
 type ReviewProps = {
   Personalform: UseFormReturn<z.infer<typeof PersonalSchema>>;
-  Educationform: UseFormReturn<
-    z.infer<typeof EducationSchema>
-  >;
-  Experienceform: UseFormReturn<
-    z.infer<typeof ExperienceSchema>
-  >;
+  Educationform: UseFormReturn<z.infer<typeof EducationSchema>>;
+  Experienceform: UseFormReturn<z.infer<typeof ExperienceSchema>>;
   Preferenceform: UseFormReturn<z.infer<typeof PreferencesSchema>>;
 };
 
@@ -49,7 +45,7 @@ const ReviewInfo = ({
 }: ReviewProps) => {
   return (
     <div className=" space-y-5">
-      <Card>
+      <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50">
         <CardHeader>
           <CardTitle>Personal Information</CardTitle>
         </CardHeader>
@@ -120,7 +116,7 @@ const ReviewInfo = ({
       {/* Content Grid */}
       <div className="grid gap-6 md:grid-cols-2">
         {/* Education Card */}
-        <Card>
+        <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50">
           <CardHeader>
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -178,38 +174,40 @@ const ReviewInfo = ({
           </CardContent>
         </Card>
         {/* Experience Card */}
-        {Experienceform.getValues("experience")?.length > 0 && <Card>
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                <GraduationCap className="h-5 w-5" />
+        {(Experienceform.getValues("experience") ?? []).length > 0 && (
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <GraduationCap className="h-5 w-5" />
+                </div>
+                <CardTitle className="text-xl">Experience</CardTitle>
               </div>
-              <CardTitle className="text-xl">Experience</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <div className=" flex items-center justify-between">
-              <div className="font-semibold text-foreground">
-                {"Software Engineer"}
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <div className=" flex items-center justify-between">
+                <div className="font-semibold text-foreground">
+                  {"Software Engineer"}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Experience:{" "}
+                  <span className="font-medium text-foreground">
+                    {5 + " years"}
+                  </span>
+                </div>
               </div>
               <div className="text-sm text-muted-foreground">
-                Experience:{" "}
+                {"Google New York, NY"}
+              </div>
+              <div className="text-sm text-muted-foreground">
+                Industry:{" "}
                 <span className="font-medium text-foreground">
-                  {5 + " years"}
+                  {"Technology"}
                 </span>
               </div>
-            </div>
-            <div className="text-sm text-muted-foreground">
-              {"Google New York, NY"}
-            </div>
-            <div className="text-sm text-muted-foreground">
-              Industry:{" "}
-              <span className="font-medium text-foreground">
-                {"Technology"}
-              </span>
-            </div>
-          </CardContent>
-        </Card>}
+            </CardContent>
+          </Card>
+        )}
         {/* Social Media Card */}
         <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 group">
           <CardHeader>
@@ -290,7 +288,7 @@ const ReviewInfo = ({
           </CardContent>
         </Card>
       </div>
-      {Preferenceform.getValues("certificates")?.length > 0 && (
+      {(Preferenceform.getValues("certificates") ?? []).length > 0 && (
         <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 group">
           <CardHeader>
             <div className="flex items-center gap-3">
@@ -309,7 +307,8 @@ const ReviewInfo = ({
                       {certificate.name}
                     </div>
                     <div className="text-sm text-muted-foreground">
-                      {certificate.start_date.toISOString().split("T")[0]} - {certificate.end_date.toISOString().split("T")[0]}
+                      {certificate.start_date.toISOString().split("T")[0]} -{" "}
+                      {certificate.end_date.toISOString().split("T")[0]}
                     </div>
                   </div>
                   <div className=" flex items-center justify-between">

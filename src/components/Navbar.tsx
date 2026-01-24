@@ -1,6 +1,5 @@
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
-// import { useSidebar } from "@/components/ui/sidebar";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/components/store";
 import { logout } from "@/components/features/auth/authSlice";
@@ -14,16 +13,9 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import apis from "@/services/api";
 import { useNavigate } from "react-router-dom";
 import { useLiveMentorsSocket } from "@/hooks/useLiveMentors";
-import {
-  setLiveMentors,
-  fetchLiveMentors,
-} from "@/components/store/slices/mentorSlice";
-import { useEffect } from "react";
 import type { AppDispatch } from "@/components/store";
-import StartLiveClass from "./StartLiveClass";
 import { userLogout } from "@/utils/auth";
 import { UPLOAD_PHOTOS_URL } from "./config/CommonBaseUrl";
 
@@ -36,19 +28,10 @@ export default function Navbar({
 }) {
   useLiveMentorsSocket();
   const { isAuthenticated, user } = useSelector(
-    (state: RootState) => state.auth
+    (state: RootState) => state.auth,
   );
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const liveMentors = useSelector(
-    (state: RootState) => state.mentors.liveMentors
-  );
-  const liveCount = liveMentors.length;
-  useEffect(() => {
-    if (user?.is_active) {
-      dispatch(fetchLiveMentors());
-    }
-  }, [user?.is_active, dispatch]);
 
   const handleLogout = async () => {
     try {
@@ -59,9 +42,6 @@ export default function Navbar({
       console.error("Logout failed:", error);
     }
   };
-
-  // const { toggleSidebar } = useSidebar();
-  // const login = false;
   return (
     <nav className="bg-background/80 backdrop-blur-lg border-b fixed left-0 right-0 top-0 z-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -75,46 +55,27 @@ export default function Navbar({
             >
               <Menu className="h-5 w-5" />
             </Button> */}
-            {isAuthenticated && <Button
-              variant="ghost"
-              onClick={() => setMenuToggle(!menuToggle)}
-              className="mr-2 absolute left-3 hidden md:flex"
-            >
-              <Menu size={25} className="" />
-            </Button>}
-            <a href="/" className="flex-shrink-0">
-              <span className="text-2xl font-bold">Logo</span>
-            </a>
-            <div className="ml-10">
-              <div className="flex items-baseline space-x-4">
-                <div className="flex items-center space-x-1">
-                  {liveCount > 0 ? (
-                    <div className="flex items-center space-x-1">
-                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                      <span className="font-semibold">{liveCount}</span>
-                      <span>Live</span>
-                    </div>
-                  ) : (
-                    <div className="text-sm text-muted-foreground">
-                      No mentors live
-                    </div>
-                  )}
-                </div>
-                {isAuthenticated && <a
-                  href="/top-mentors"
-                  className="text-foreground hover:text-primary transition-colors hidden md:block"
-                >
-                  Top Mentors
-                </a>}
-              </div>
-            </div>
-          </div>
-          {isAuthenticated  && <div className="flex-1 flex justify-center px-2 lg:ml-6 lg:justify-end gap-2">
-            <SearchBar />
-            {isAuthenticated && user?.role === "mentor" && user.is_active && (
-              <StartLiveClass title="" />
+            {isAuthenticated && (
+              <Button
+                variant="ghost"
+                onClick={() => setMenuToggle(!menuToggle)}
+                className="mr-2 absolute left-3 hidden md:flex"
+              >
+                <Menu size={25} className="" />
+              </Button>
             )}
-          </div>}
+            <a href="/" className="flex-shrink-0 flex gap-2 items-center">
+              <img src="/LOGO.svg" alt="mentedge" className=" h-7 w-7" />
+              <span className="text-2xl font-bold">
+                Mentedge
+              </span>
+            </a>
+          </div>
+          {/* {isAuthenticated && (
+            <div className="flex-1 flex justify-center px-2 lg:ml-6 lg:justify-end gap-2">
+              <SearchBar />
+            </div>
+          )} */}
           {!isAuthenticated ? (
             <>
               <div className="hidden md:block">
@@ -141,9 +102,7 @@ export default function Navbar({
                   >
                     <Avatar className="h-8 w-8">
                       <AvatarImage
-                        src={
-                        UPLOAD_PHOTOS_URL + user?.avatar
-                        }
+                        src={UPLOAD_PHOTOS_URL + user?.avatar}
                         alt={""}
                       />
                       <AvatarFallback>
@@ -159,7 +118,7 @@ export default function Navbar({
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">
-                        {user?.username}
+                        {user?.full_name}
                       </p>
                       <p className="text-xs leading-none text-muted-foreground">
                         {user?.email}

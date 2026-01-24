@@ -8,17 +8,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { BookOpen, Check, Pen, Trash, Users } from "lucide-react";
+import { BookOpen, Check, Pen, Trash } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 import { Internship } from "@/index";
 import { format } from "date-fns";
 import { AcceptAndPost } from "./AcceptAndPost";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DeleteInternship } from "./DeleteInternship";
 import { EditInternship } from "./EditInternship";
 
-const WorkFlowCenter = ({ internships }: { internships: Internship[] }) => {
+const WorkFlowCenter = ({
+  internships,
+  setInternships,
+}: {
+  internships: Internship[];
+  setInternships: React.Dispatch<React.SetStateAction<Internship[]>>;
+}) => {
   return (
     <Card className=" col-span-3 bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50  max-h-screen mb-4">
       <CardHeader>
@@ -33,7 +39,11 @@ const WorkFlowCenter = ({ internships }: { internships: Internship[] }) => {
       {internships.length > 0 ? (
         <CardContent className=" overflow-y-scroll space-y-3">
           {internships.map((internship: Internship) => (
-            <RenderCard key={internship.id} internship={internship} />
+            <RenderCard
+              key={internship.id}
+              internship={internship}
+              setInternships={setInternships}
+            />
           ))}
         </CardContent>
       ) : (
@@ -47,7 +57,13 @@ const WorkFlowCenter = ({ internships }: { internships: Internship[] }) => {
 
 export default WorkFlowCenter;
 
-const RenderCard = ({ internship }: { internship: Internship }) => {
+const RenderCard = ({
+  internship,
+  setInternships,
+}: {
+  internship: Internship;
+  setInternships: React.Dispatch<React.SetStateAction<Internship[]>>;
+}) => {
   const [acceptOpen, setAcceptOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -77,8 +93,8 @@ const RenderCard = ({ internship }: { internship: Internship }) => {
                         internship.co_host[0].invite_status === "pending"
                           ? " border-yellow-600/50  text-white bg-yellow-600/50"
                           : internship.co_host[0].invite_status === "accepted"
-                          ? "flex-1 border-green-600/50 text-white bg-green-600/50"
-                          : "flex-1 border-red-600/50 text-white bg-red-600/50"
+                            ? "flex-1 border-green-600/50 text-white bg-green-600/50"
+                            : "flex-1 border-red-600/50 text-white bg-red-600/50",
                       )}
                     >
                       {internship.co_host[0].invite_status}
@@ -94,10 +110,10 @@ const RenderCard = ({ internship }: { internship: Internship }) => {
                   internship.status === "draft"
                     ? " border-yellow-600/50  text-white bg-yellow-600/50"
                     : internship.status === "published"
-                    ? "flex-1 border-green-600/50 text-white bg-green-600/50"
-                    : internship.status === "submitted"
-                    ? "flex-1 border-blue-600/50 text-white bg-blue-600/50"
-                    : "flex-1 border-red-600/50 text-white bg-red-600/50"
+                      ? "flex-1 border-green-600/50 text-white bg-green-600/50"
+                      : internship.status === "submitted"
+                        ? "flex-1 border-blue-600/50 text-white bg-blue-600/50"
+                        : "flex-1 border-red-600/50 text-white bg-red-600/50",
                 )}
               >
                 {internship.status}
@@ -110,10 +126,13 @@ const RenderCard = ({ internship }: { internship: Internship }) => {
         </CardHeader>
 
         <CardContent>
+          <div className=" border rounded-xl p-2 mb-3 text-muted-foreground">
+            {internship.description}
+          </div>
           <div className=" grid  gap-2">
             {Object.entries(internship.domains).map(
               ([domainName, domainData]) => (
-                <Card className="py-4">
+                <Card className="py-4" key={domainName}>
                   <CardHeader className="flex flex-row items-center justify-between px-3">
                     <CardTitle className=" font-semibold text-primary capitalize text-xl">
                       {domainName}
@@ -121,6 +140,9 @@ const RenderCard = ({ internship }: { internship: Internship }) => {
                   </CardHeader>
                   <CardContent className=" space-y-3 px-3">
                     <Separator className=" -mt-3" />
+                    <div className=" border rounded-xl p-2 mb-3 text-muted-foreground">
+                      {domainData.domain_description}
+                    </div>
                     <div className="flex gap-2">
                       <span className="font-semibold text-foreground">
                         Skills:
@@ -180,7 +202,7 @@ const RenderCard = ({ internship }: { internship: Internship }) => {
                         <span className="text-muted-foreground">
                           {format(
                             new Date(domainData.start_date),
-                            "dd MMM yyyy"
+                            "dd MMM yyyy",
                           )}
                         </span>
                       </div>
@@ -199,7 +221,7 @@ const RenderCard = ({ internship }: { internship: Internship }) => {
                         <span className="text-muted-foreground">
                           {format(
                             new Date(domainData.application_deadline),
-                            "dd MMM yyyy"
+                            "dd MMM yyyy",
                           )}
                         </span>
                       </div>
@@ -215,12 +237,14 @@ const RenderCard = ({ internship }: { internship: Internship }) => {
                         <span className="font-semibold text-foreground">
                           Joined:
                         </span>{" "}
-                        <span className="text-muted-foreground">{0}</span>
+                        <span className="text-muted-foreground">
+                          {domainData.join_count}
+                        </span>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
-              )
+              ),
             )}
           </div>
         </CardContent>
@@ -244,18 +268,13 @@ const RenderCard = ({ internship }: { internship: Internship }) => {
               size="default"
               className=" cursor-pointer flex-1 border-green-500/50 bg-green-500/10 text-green-500 hover:bg-green-500/50 hover:text-green-500/80"
               onClick={() => setAcceptOpen(true)}
-              disabled={internship.status !== "submitted"}
+              disabled={
+                internship.status !== "submitted" &&
+                internship.co_host.length > 0
+              }
             >
               <Check size={11} />
               Approve & Post
-            </Button>
-            <Button
-              variant="outline"
-              size="default"
-              className=" cursor-pointer flex-1 border-blue-500/50 bg-blue-500/10 text-blue-500 hover:bg-blue-500/50 hover:text-blue-500/80"
-            >
-              <Users size={11} />
-              Open for Co-host
             </Button>
             <Button
               variant="outline"
@@ -269,21 +288,30 @@ const RenderCard = ({ internship }: { internship: Internship }) => {
           </div>
         </CardFooter>
       </Card>
-      <AcceptAndPost
-        open={acceptOpen}
-        setOpen={setAcceptOpen}
-        internshipId={internship.id}
-      />
-      <DeleteInternship
-        open={deleteOpen}
-        setOpen={setDeleteOpen}
-        internshipId={internship.id}
-      />
-      <EditInternship
-        open={editOpen}
-        setOpen={setEditOpen}
-        internship={internship}
-      />
+      {acceptOpen && (
+        <AcceptAndPost
+          open={acceptOpen}
+          setOpen={setAcceptOpen}
+          internshipId={internship.id}
+          setWorkflowData={setInternships}
+        />
+      )}
+      {deleteOpen && (
+        <DeleteInternship
+          open={deleteOpen}
+          setOpen={setDeleteOpen}
+          internshipId={internship.id}
+          setWorkflowData={setInternships}
+        />
+      )}
+      {editOpen && (
+        <EditInternship
+          open={editOpen}
+          setOpen={setEditOpen}
+          internship={internship}
+          setWorkflowData={setInternships}
+        />
+      )}
     </>
   );
 };

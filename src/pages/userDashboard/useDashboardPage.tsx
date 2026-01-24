@@ -1,4 +1,4 @@
-import React from 'react'
+
 import OngoingInternship from './ongoingInternship'
 import SearchInternship from './searchInternship'
 

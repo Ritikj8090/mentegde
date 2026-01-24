@@ -1,5 +1,11 @@
 import * as React from "react";
-import { Home, Info, MessageCircleIcon, Settings2 } from "lucide-react";
+import {
+  Home,
+  Info,
+  InfoIcon,
+  MessageCircleIcon,
+  Settings2,
+} from "lucide-react";
 import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
 import {
   SidebarGroup,
@@ -7,31 +13,43 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-
+import { RootState } from "../store/store";
+import { useSelector } from "react-redux";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = typeof window !== "undefined" && window.location.pathname;
+  const user = useSelector((state: RootState) => state.auth.user);
 
   const navMain = [
     {
       title: "Dashboard",
       url: "/dashboard",
       icon: Home,
+      visibleTo: ["user", "mentor"],
+    },
+    {
+      title: "Overview",
+      url: "/internship-overview",
+      icon: InfoIcon,
+      visibleTo: ["mentor"],
     },
     {
       title: "Chats",
       url: "/chat",
       icon: MessageCircleIcon,
+      visibleTo: ["user", "mentor"],
     },
     {
       title: "About",
       url: "/about",
       icon: Info,
+      visibleTo: ["user", "mentor"],
     },
     {
       title: "Settings",
       url: "/settings",
       icon: Settings2,
+      visibleTo: ["user", "mentor"],
     },
   ];
 
@@ -40,21 +58,22 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <SidebarGroup>
           <SidebarMenu>
-            {navMain.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton
-                asChild
-                  className="text-base font-medium"
-                  isActive={pathname === item.url}
-                  tooltip={item.title}
-                >
-                  <a href={item.url}>
-                    {item.icon && <item.icon />}
-                    <span>{item.title}</span>
-                  </a>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
+            {navMain
+              .filter((item) => item.visibleTo.includes(user?.role || "user"))
+              .map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === item.url}
+                    tooltip={item.title}
+                  >
+                    <a href={item.url}>
+                      {item.icon && <item.icon />}
+                      <span>{item.title}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>

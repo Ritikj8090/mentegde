@@ -137,8 +137,8 @@ const AccordionConcept = ({
   role: string;
 }) => {
   const [files, setFiles] = useState<ConceptFile[]>([]);
-  const [editConcept, setEditConcept] = useState(false);
   const [openUpload, setOpenUpload] = useState(false);
+  const [editConcept, setEditConcept] = useState(false);
 
   useEffect(() => {
     const fetchFiles = async () => {
@@ -151,7 +151,7 @@ const AccordionConcept = ({
   const handleStatusChange = async (
     event: React.MouseEvent,
     conceptId: string,
-    nextStatus: "completed" | "pending"
+    nextStatus: "completed" | "pending",
   ) => {
     event.preventDefault();
     event.stopPropagation();
@@ -167,8 +167,8 @@ const AccordionConcept = ({
                 status: nextStatus,
               },
             }
-          : concept
-      )
+          : concept,
+      ),
     );
 
     try {
@@ -185,8 +185,8 @@ const AccordionConcept = ({
                   status: res.progress.status,
                 },
               }
-            : concept
-        )
+            : concept,
+        ),
       );
     } catch (error) {
       console.error(error);
@@ -213,7 +213,7 @@ const AccordionConcept = ({
                       conceptsData.id,
                       conceptsData.progress.status === "completed"
                         ? "pending"
-                        : "completed"
+                        : "completed",
                     )
                   }
                 />
@@ -234,8 +234,8 @@ const AccordionConcept = ({
                   conceptsData.progress.status === "completed"
                     ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
                     : conceptsData.progress.status === "pending"
-                    ? "bg-amber-500/10 text-amber-500 border-amber-500/20"
-                    : "bg-muted text-muted-foreground"
+                      ? "bg-amber-500/10 text-amber-500 border-amber-500/20"
+                      : "bg-muted text-muted-foreground",
                 )}
               >
                 {role === "user"
@@ -258,7 +258,10 @@ const AccordionConcept = ({
                 <h1>Resources</h1>
                 <div className="grid grid-cols-3 gap-2">
                   {files.map((file) => (
-                    <div className="group flex items-center gap-3 p-3 rounded-lg bg-card border border-border hover:border-primary/50 transition-colors">
+                    <div
+                      key={file.id}
+                      className="group flex items-center gap-3 p-3 rounded-lg bg-card border border-border hover:border-primary/50 transition-colors"
+                    >
                       {/* File Preview */}
                       <div className="h-12 w-12 rounded-md bg-muted flex items-center justify-center shrink-0">
                         {getFileIcon("image")}

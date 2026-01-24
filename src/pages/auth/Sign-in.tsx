@@ -18,13 +18,13 @@ const SignIn = () => {
           transition={{ duration: 0.7 }}
           className="text-4xl md:text-5xl font-extrabold"
         >
-          Welcome to <span className="text-yellow-50">{LOGO_NAME}</span>
+          Welcome to <span className="text-primary/70">{LOGO_NAME}</span>
         </motion.h1>
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.7 }}
-          className="mt-4 text-lg text-gray-300 max-w-2xl"
+          className="mt-4 text-lg text-muted-foreground max-w-2xl"
         >
           Join as a user to access your personalized learning dashboard or sign
           in as a mentor to guide and manage students.
@@ -34,13 +34,13 @@ const SignIn = () => {
       {/* Signup Cards */}
       <section className=" grid grid-cols-2 gap-4">
         {/* User Card */}
-        <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 hover:shadow-indigo-500/40 transition ease-in-out duration-200">
+        <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg duration-300 border-border/50 hover:shadow-primary/40 transition ease-in-out duration-200">
           <CardContent>
             <div className="flex flex-col justify-center items-center h-80">
               <div className=" flex flex-col items-center space-y-3">
-                <FaUser className="text-7xl text-indigo-400" />
+                <FaUser className="text-7xl text-primary" />
                 <h2 className="text-3xl font-bold mt-4">User Sign In</h2>
-                <p className="text-gray-400 text-center mt-2 flex-grow">
+                <p className="text-muted-foreground text-center mt-2 flex-grow">
                   Access your personalized learning dashboard and track
                   progress.
                 </p>
@@ -56,13 +56,13 @@ const SignIn = () => {
         </Card>
 
         {/* Mentor Card */}
-        <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 hover:shadow-indigo-500/40 transition ease-in-out duration-200">
+        <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg duration-300 border-border/50 hover:shadow-primary/40 transition ease-in-out duration-200">
           <CardContent>
             <div className="flex flex-col justify-center items-center h-80">
               <div className=" flex flex-col items-center space-y-3">
-                <FaUserGraduate className="text-7xl text-indigo-400" />
+                <FaUserGraduate className="text-7xl text-primary" />
                 <h2 className="text-3xl font-bold mt-4">Mentor Sign In</h2>
-                <p className="text-gray-400 text-center mt-2 flex-grow">
+                <p className="text-muted-foreground text-center mt-2 flex-grow">
                   Access your mentorship portal and manage your students with
                   ease.
                 </p>

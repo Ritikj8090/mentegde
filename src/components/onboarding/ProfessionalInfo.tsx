@@ -6,7 +6,6 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import {
   Select,
@@ -16,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { UseFormReturn } from "react-hook-form";
-import { ExperienceSchema } from "./schema";
+import { ExperienceSchema } from "../../pages/onboarding/schema";
 import { experienceLevelOptions } from "@/constant";
 import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
@@ -58,13 +57,15 @@ const ProfessionalInfo = ({ Experienceform }: ProfessionalInfoProps) => {
                 {exp.map((_, index) => (
                   <Card key={index} className=" relative">
                     {/* Remove */}
-                <button
-                  type="button"
-                  onClick={() => removeExperience(index)}
-                  className="absolute top-3 cursor-pointer right-3 text-muted-foreground hover:text-destructive"
-                >
-                  <X className="size-4" />
-                </button>
+                    {index > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => removeExperience(index)}
+                        className="absolute top-3 cursor-pointer right-3 text-muted-foreground hover:text-destructive"
+                      >
+                        <X className="size-4" />
+                      </button>
+                    )}
                     <CardContent className="space-y-4">
                       <div className=" grid grid-cols-2 gap-5">
                         <FormField
@@ -79,7 +80,6 @@ const ProfessionalInfo = ({ Experienceform }: ProfessionalInfoProps) => {
                                   {...field}
                                 />
                               </FormControl>
-                              <FormMessage />
                             </FormItem>
                           )}
                         />
@@ -95,7 +95,6 @@ const ProfessionalInfo = ({ Experienceform }: ProfessionalInfoProps) => {
                                   {...field}
                                 />
                               </FormControl>
-                              <FormMessage />
                             </FormItem>
                           )}
                         />
@@ -113,7 +112,6 @@ const ProfessionalInfo = ({ Experienceform }: ProfessionalInfoProps) => {
                                   {...field}
                                 />
                               </FormControl>
-                              <FormMessage />
                             </FormItem>
                           )}
                         />
@@ -129,7 +127,6 @@ const ProfessionalInfo = ({ Experienceform }: ProfessionalInfoProps) => {
                                   {...field}
                                 />
                               </FormControl>
-                              <FormMessage />
                             </FormItem>
                           )}
                         />
@@ -158,14 +155,13 @@ const ProfessionalInfo = ({ Experienceform }: ProfessionalInfoProps) => {
                                 ))}
                               </SelectContent>
                             </Select>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
                     </CardContent>
                   </Card>
                 ))}
-                <Button
+                {/* <Button
                   type="button"
                   variant="outline"
                   onClick={addExperience}
@@ -173,9 +169,7 @@ const ProfessionalInfo = ({ Experienceform }: ProfessionalInfoProps) => {
                 >
                   <Plus className="size-4" />
                   Add More Experience
-                </Button>
-
-                <FormMessage />
+                </Button> */}
               </FormItem>
             );
           }}

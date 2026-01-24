@@ -8,31 +8,38 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
+import { Internship } from "@/index";
 import { cohostRespondToInternship } from "@/utils/internship";
-import { X } from "lucide-react";
 import React from "react";
 
 interface RejectRequestProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   internshipId: string;
+  setInternshipData: React.Dispatch<React.SetStateAction<Internship[]>>;
 }
 
 export function RejectRequest({
   open,
   setOpen,
   internshipId,
+  setInternshipData,
 }: RejectRequestProps) {
-  const [openToaster, setOpenToaster] = React.useState(false);
+  const { addToast } = Toaster();
   const handleRejectInternship = async () => {
     try {
       const res = await cohostRespondToInternship(internshipId);
-      console.log(res);
       if (res) {
-        setOpenToaster(true);
+        addToast({
+          type: "success",
+          title: "Rejected Successfully",
+          description: "Internship rejected successfully",
+          duration: 3000,
+        });
+        setInternshipData((prev: Internship[]) =>
+          prev.filter((item) => item.id !== internshipId),
+        );
       }
     } catch (error) {
       console.error(error);
@@ -60,13 +67,6 @@ export function RejectRequest({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      <Toaster
-        open={openToaster}
-        title="Rejected Successfully"
-        description="Internship rejected successfully"
-        icon={<X className="text-red-500" />}
-        href="/internship-overview"
-      />
     </>
   );
 }

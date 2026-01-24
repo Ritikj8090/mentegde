@@ -6,7 +6,6 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import {
   Select,
@@ -16,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { UseFormReturn } from "react-hook-form";
-import { EducationSchema } from "./schema";
+import { EducationSchema } from "../../pages/onboarding/schema";
 import { degreeOptions } from "@/constant";
 import { Card, CardContent } from "../ui/card";
 import { Plus, X } from "lucide-react";
@@ -52,20 +51,22 @@ const EducationalInfo = ({ Educationform }: EducationalInfoProps) => {
 
             const removeEducation = (index: number) => {
               field.onChange(
-                educations.filter((_: any, i: number) => i !== index)
+                educations.filter((_: any, i: number) => i !== index),
               );
             };
             return (
               <FormItem>
                 {educations.map((_, index) => (
                   <Card key={index} className="relative">
-                    {index !== 0 && <button
-                      type="button"
-                      onClick={() => removeEducation(index)}
-                      className="absolute top-3 cursor-pointer right-3 text-muted-foreground hover:text-destructive"
-                    >
-                      <X className="size-4" />
-                    </button>}
+                    {index !== 0 && (
+                      <button
+                        type="button"
+                        onClick={() => removeEducation(index)}
+                        className="absolute top-3 cursor-pointer right-3 text-muted-foreground hover:text-destructive"
+                      >
+                        <X className="size-4" />
+                      </button>
+                    )}
                     <CardContent className="space-y-4">
                       <FormField
                         control={Educationform.control}
@@ -90,7 +91,6 @@ const EducationalInfo = ({ Educationform }: EducationalInfoProps) => {
                                 ))}
                               </SelectContent>
                             </Select>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -106,7 +106,6 @@ const EducationalInfo = ({ Educationform }: EducationalInfoProps) => {
                                 {...field}
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -122,7 +121,6 @@ const EducationalInfo = ({ Educationform }: EducationalInfoProps) => {
                                 {...field}
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -133,23 +131,64 @@ const EducationalInfo = ({ Educationform }: EducationalInfoProps) => {
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Graduation Year</FormLabel>
+
                               <FormControl>
-                                <Input placeholder="e.g., 2023" {...field} />
+                                <Input
+                                  {...field}
+                                  placeholder="e.g., 2023"
+                                  inputMode="numeric"
+                                  maxLength={4}
+                                  onChange={(e) => {
+                                    const value = e.target.value
+                                      .replace(/\D/g, "")
+                                      .slice(0, 4);
+                                    field.onChange(value);
+                                  }}
+                                />
                               </FormControl>
-                              <FormMessage />
                             </FormItem>
                           )}
                         />
+
                         <FormField
                           control={Educationform.control}
                           name={`educations.${index}.gpa`}
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>GPA (On scale of 4)</FormLabel>
+
                               <FormControl>
-                                <Input placeholder="3.9" {...field} />
+                                <Input
+                                  {...field}
+                                  placeholder="3.75"
+                                  inputMode="decimal"
+                                  onChange={(e) => {
+                                    let value = e.target.value;
+
+                                    // Remove invalid characters
+                                    value = value.replace(/[^0-9.]/g, "");
+
+                                    // Allow only one decimal point
+                                    const parts = value.split(".");
+                                    if (parts.length > 2) {
+                                      value = parts[0] + "." + parts[1];
+                                    }
+
+                                    // Limit to 2 decimal places
+                                    if (parts[1]?.length > 2) {
+                                      value =
+                                        parts[0] + "." + parts[1].slice(0, 2);
+                                    }
+
+                                    // Cap GPA at 4.00
+                                    if (Number(value) > 4) {
+                                      value = "4.00";
+                                    }
+
+                                    field.onChange(value);
+                                  }}
+                                />
                               </FormControl>
-                              <FormMessage />
                             </FormItem>
                           )}
                         />
@@ -157,7 +196,7 @@ const EducationalInfo = ({ Educationform }: EducationalInfoProps) => {
                     </CardContent>
                   </Card>
                 ))}
-                <Button
+                {/* <Button
                   type="button"
                   variant="outline"
                   onClick={addEducation}
@@ -165,9 +204,7 @@ const EducationalInfo = ({ Educationform }: EducationalInfoProps) => {
                 >
                   <Plus className="size-4" />
                   Add More Education
-                </Button>
-
-                <FormMessage />
+                </Button> */}
               </FormItem>
             );
           }}

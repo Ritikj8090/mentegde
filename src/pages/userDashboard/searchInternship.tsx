@@ -46,10 +46,14 @@ export default SearchInternship;
 const RenderCard = ({ internship }: { internship: Internship }) => {
   const [ViewInternship, setViewInternship] = useState(false);
 
-  const handleJoinInternship = async (internship_id: string, domain_name: string, domain_id: string) => {
+  const handleJoinInternship = async (
+    internship_id: string,
+    domain_name: string,
+    domain_id: string,
+  ) => {
     const res = await joinInternship(internship_id, domain_id, domain_name);
     console.log(res);
-  }
+  };
   return (
     <>
       <Card>
@@ -82,20 +86,21 @@ const RenderCard = ({ internship }: { internship: Internship }) => {
           <div className=" space-y-2">
             {Object.entries(internship.domains).map(
               ([domainName, domainData]) => (
-                <Card className="py-2 px-0 pt-4">
+                <Card key={domainName} className="py-2 px-0 pt-4">
                   <CardHeader className="flex flex-row items-center justify-between px-3">
                     <CardTitle className="text-xl font-bold text-primary capitalize">
                       {domainName}
                     </CardTitle>
                     <div className=" space-x-3">
-                      <Button
-                        variant="outline"
-                        size="default"
-                        className=" cursor-pointer flex-1 border-green-600/50 bg-green-600/10 text-green-600 hover:bg-green-600/50 hover:text-white"
-                        onClick={() => handleJoinInternship(internship.id, domainName, domainData.id)}
-                      >
-                        Join
-                      </Button>
+                      <a href={`/payment?internshipId=${internship.id}&domainId=${domainData.id}&domainName=${domainName}`}>
+                        <Button
+                          variant="outline"
+                          size="default"
+                          className=" cursor-pointer flex-1 border-green-600/50 bg-green-600/10 text-green-600 hover:bg-green-600/50 hover:text-white"
+                        >
+                          Join
+                        </Button>
+                      </a>
                       <Button
                         variant="outline"
                         size="default"
@@ -176,16 +181,18 @@ const RenderCard = ({ internship }: { internship: Internship }) => {
                     </div>
                   </CardContent>
                 </Card>
-              )
+              ),
             )}
           </div>
         </CardContent>
       </Card>
-      <ViewInternshipDetail
-        open={ViewInternship}
-        setOpen={setViewInternship}
-        internship={internship}
-      />
+      {ViewInternship && (
+        <ViewInternshipDetail
+          open={ViewInternship}
+          setOpen={setViewInternship}
+          internship={internship}
+        />
+      )}
     </>
   );
 };

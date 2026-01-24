@@ -6,11 +6,13 @@ import {
   ClipboardCheck,
   Pen,
   Plus,
+  Trash2,
+  Upload,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
 import { AddAssignments } from "./AddAssignments";
-import { Assignment } from "@/index";
+import { Assignment, AssignmentFile } from "@/index";
 import {
   Accordion,
   AccordionContent,
@@ -19,6 +21,15 @@ import {
 } from "@/components/ui/accordion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { EditAssignments } from "./EditAssignment";
+import { AddFileInAssignment } from "./AddFileInAssignment";
+import { Button } from "@/components/ui/button";
+import { getFileIcon } from "../WorkboardPage";
+import {
+  getAssignmentFiles,
+  getConceptFiles,
+  submitAssignment,
+} from "@/utils/internship";
+import SubmitAssignment from "./submitAssignment";
 
 interface WorkboardSectionProps {
   onToggleItem?: (itemId: string) => void;
@@ -41,7 +52,7 @@ const MilestonesAssingment = ({
   const [showAddAssignments, setShowAddAssignments] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
   const completedCount = assignmentsData.filter(
-    (assignment) => assignment
+    (assignment) => assignment,
   ).length;
 
   useEffect(() => {
@@ -146,16 +157,43 @@ const AccordionAssignment = ({
   domain_name: string;
 }) => {
   const [editAssignment, setEditAssignment] = useState(false);
+  const [files, setFiles] = useState<AssignmentFile[]>([]);
+  const [openUpload, setOpenUpload] = useState(false);
+
+  useEffect(() => {
+    const fetchFiles = async () => {
+      const res = await getAssignmentFiles(assignmentsData.id);
+      setFiles(res);
+    };
+    fetchFiles();
+  }, [assignmentsData.id]);
 
   const handleStatusChange = async (
     event: React.MouseEvent,
     taskId: string,
-    nextStatus: "todo" | "done"
+    nextStatus: "todo" | "done",
   ) => {
     event.preventDefault();
     event.stopPropagation();
   };
 
+  const handleAssignmentSubmit = async (data: {
+    text?: string;
+    files: File[];
+  }) => {
+    const res = await submitAssignment(
+      assignmentsData.id,
+      data.text || "",
+      "submitted",
+    );
+    console.log(res);
+    setAssignmentsData((prev) =>
+      prev.map((assignment) =>
+        assignment.id === assignmentsData.id ? res : assignment,
+      ),
+    );
+    setEditAssignment(false);
+  };
   return (
     <>
       <Accordion
@@ -183,27 +221,12 @@ const AccordionAssignment = ({
               {role === "mentor" && (
                 <div className=" flex gap-2 items-center">
                   <Pen size={13} onClick={() => setEditAssignment(true)} />
+                  <Upload size={13} onClick={() => setOpenUpload(true)} />
                 </div>
               )}
             </div>
             <div className=" flex items-center gap-2">
-              <Badge
-                variant="secondary"
-                className={cn(
-                  "text-xs",
-                  assignmentsData.progress.status === "completed"
-                    ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
-                    : assignmentsData.progress.status === "pending"
-                    ? "bg-amber-500/10 text-amber-500 border-amber-500/20"
-                    : "bg-muted text-muted-foreground"
-                )}
-              >
-                {role === "user"
-                  ? assignmentsData.progress.status === "completed"
-                    ? "Completed"
-                    : "Pending"
-                  : assignmentsData.status}
-              </Badge>
+              
               <ChevronDownIcon className="text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200" />
             </div>
           </AccordionTrigger>
@@ -213,6 +236,50 @@ const AccordionAssignment = ({
               <h1>Description</h1>
               <p className=" capitalize">{assignmentsData.description}</p>
             </div>
+            {files.length > 0 && (
+              <div className=" space-y-1">
+                <h1>Resources</h1>
+                <div className="grid grid-cols-3 gap-2">
+                  {files.map((file) => (
+                    <div
+                      key={file.id}
+                      className="group flex items-center gap-3 p-3 rounded-lg bg-card border border-border hover:border-primary/50 transition-colors"
+                    >
+                      {/* File Preview */}
+                      <div className="h-12 w-12 rounded-md bg-muted flex items-center justify-center shrink-0">
+                        {getFileIcon("image")}
+                      </div>
+
+                      {/* File Info */}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-foreground truncate">
+                          {file.file_name}
+                        </p>
+                        <p className="text-xs text-muted-foreground capitalize">
+                          {file.file_type}
+                        </p>
+                      </div>
+
+                      {/* Delete Button */}
+                      {role === "mentor" && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            ("onDeleteFile?.(file.id)");
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {role === "user" && <SubmitAssignment onSubmit={handleAssignmentSubmit} />}
           </AccordionContent>
         </AccordionItem>
       </Accordion>
@@ -224,6 +291,14 @@ const AccordionAssignment = ({
           domain_name={domain_name}
           assignmentsData={assignmentsData}
           setAssignmentsData={setAssignmentsData}
+        />
+      )}
+      {openUpload && (
+        <AddFileInAssignment
+          open={openUpload}
+          setOpen={setOpenUpload}
+          assignmentId={assignmentsData.id}
+          setFiles={setFiles}
         />
       )}
     </>

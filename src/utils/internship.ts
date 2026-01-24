@@ -1,7 +1,7 @@
 import { internshipSchema } from "@/pages/manageInternship/schema";
 import { api } from "@/services/api";
 import { z } from "zod";
-import { DomainDetails } from "..";
+import { DomainDetails, DomainDetailsProps } from "..";
 import {
   assignmentsSchema,
   conceptsSchema,
@@ -10,9 +10,14 @@ import {
 } from "@/pages/workboard/schema";
 
 export const createInternship = async (
-  data: z.infer<typeof internshipSchema>
+  data: z.infer<typeof internshipSchema>,
 ) => {
   const result = await api.post("/internships", data);
+  return result.data;
+};
+
+export const getInternship = async (internshipId: string) => {
+  const result = await api.get(`/internships/${internshipId}`);
   return result.data;
 };
 
@@ -23,7 +28,7 @@ export const getCurrentMentorInternships = async () => {
 
 export const getCurrentMentorInternshipsRequests = async () => {
   const result = await api.get(
-    "/internships/current-mentor-requested-internships"
+    "/internships/current-mentor-requested-internships",
   );
   return result.data;
 };
@@ -40,7 +45,7 @@ export const deleteInternship = async (internshipId: string) => {
 
 export const editInternship = async (
   data: z.infer<typeof internshipSchema>,
-  internshipId: string
+  internshipId: string,
 ) => {
   const result = await api.put(`/internships/${internshipId}`, data);
   return result.data;
@@ -52,12 +57,12 @@ export const getInternshipsByStatus = async (status: string) => {
 };
 
 export const submitCohostDomain = async (
-  data: DomainDetails,
-  internshipId: string
+  data: DomainDetailsProps,
+  internshipId: string,
 ) => {
   const result = await api.post(
     `/internships/${internshipId}/cohost-domain`,
-    data
+    data,
   );
   return result.data;
 };
@@ -69,47 +74,47 @@ export const cohostRespondToInternship = async (internshipId: string) => {
 
 export const getScheduledInternships = async () => {
   const result = await api.get(
-    "/internships/current-mentor-scheduled-internships"
+    "/internships/current-mentor-scheduled-internships",
   );
   return result.data;
 };
 
 export const getOngoingInternships = async () => {
   const result = await api.get(
-    "/internships/current-mentor-ongoing-internships"
+    "/internships/current-mentor-ongoing-internships",
   );
   return result.data;
 };
 
 export const createMilestones = async (
   workboardId: string,
-  data: z.infer<typeof milestonesSchema>
+  data: z.infer<typeof milestonesSchema>,
 ) => {
   const result = await api.post(
     `/internships/workboards/${workboardId}/milestones`,
-    data
+    data,
   );
   return result.data;
 };
 
 export const createConcepts = async (
   milestoneId: string,
-  data: z.infer<typeof conceptsSchema>
+  data: z.infer<typeof conceptsSchema>,
 ) => {
   const result = await api.post(
     `/internships/milestones/${milestoneId}/concepts`,
-    data
+    data,
   );
   return result.data;
 };
 
 export const updateConceptProgress = async (
   conceptId: string,
-  status: "completed" | "pending"
+  status: "completed" | "pending",
 ) => {
   const result = await api.post(
     `/internships/intern/concepts/${conceptId}/progress`,
-    { status }
+    { status },
   );
   return result.data;
 };
@@ -123,7 +128,7 @@ export const uploadConceptFiles = async (conceptId: string, files: File[]) => {
     formData,
     {
       headers: { "Content-Type": "multipart/form-data" },
-    }
+    },
   );
   return result.data;
 };
@@ -135,53 +140,55 @@ export const getConceptFiles = async (conceptId: string) => {
 
 export const deleteConceptFile = async (conceptId: string, fileId: string) => {
   const result = await api.delete(
-    `/internships/concepts/${conceptId}/files/${fileId}`
+    `/internships/concepts/${conceptId}/files/${fileId}`,
   );
   return result.data;
 };
 
 export const createTasks = async (
   milestoneId: string,
-  data: z.infer<typeof tasksSchema>
+  data: z.infer<typeof tasksSchema>,
 ) => {
   const result = await api.post(
     `/internships/milestones/${milestoneId}/tasks`,
-    data
+    data,
   );
   return result.data;
 };
 
 export const createAssignments = async (
   milestoneId: string,
-  data: z.infer<typeof assignmentsSchema>
+  data: z.infer<typeof assignmentsSchema>,
 ) => {
   const result = await api.post(
     `/internships/milestones/${milestoneId}/assignments`,
-    data
+    data,
   );
   return result.data;
 };
 
-export const getAllDomainIntern = async (
-  internshipId: string,
-  domainName: string
-) => {
+export const getAllDomainIntern = async (internshipId: string) => {
   const result = await api.get(
-    `/internships/${internshipId}/domains/${domainName}/interns`
+    `/internships/${internshipId}/domains/all/interns`,
   );
   return result.data;
+};
+
+export const getAllDomainMentor = async (internshipId: string) => {
+  const respond = await api.get(`/internships/${internshipId}/mentors`);
+  return respond.data;
 };
 
 export const getInternWorkboard = async (internshipId: string) => {
   const result = await api.get(
-    `/internships/intern/workboards/${internshipId}`
+    `/internships/intern/workboards/${internshipId}`,
   );
   return result.data;
 };
 
 export const getCurrentMentorWorkboard = async (internshipId: string) => {
   const result = await api.get(
-    `/internships/workboards/current/${internshipId}`
+    `/internships/workboards/current/${internshipId}`,
   );
   return result.data;
 };
@@ -194,7 +201,7 @@ export const getAllInternshipForIntern = async () => {
 export const joinInternship = async (
   internshipId: string,
   domain_id: string,
-  domain_name: string
+  domain_name: string,
 ) => {
   const result = await api.post(`/internships/intern/join`, {
     internshipId,
@@ -211,7 +218,7 @@ export const getOngoingInternshipsForIntern = async () => {
 
 export const updateConcept = async (
   conceptId: string,
-  data: z.infer<typeof conceptsSchema>
+  data: z.infer<typeof conceptsSchema>,
 ) => {
   const result = await api.put(`/internships/concepts/${conceptId}`, data);
   return result.data;
@@ -219,7 +226,7 @@ export const updateConcept = async (
 
 export const updateTask = async (
   taskId: string,
-  data: z.infer<typeof tasksSchema>
+  data: z.infer<typeof tasksSchema>,
 ) => {
   const result = await api.put(`/internships/tasks/${taskId}`, data);
   return result.data;
@@ -227,22 +234,22 @@ export const updateTask = async (
 
 export const updateTaskProgress = async (
   taskId: string,
-  status: "todo" | "done"
+  status: "todo" | "done",
 ) => {
   const result = await api.post(
     `/internships/intern/tasks/${taskId}/progress`,
-    { status }
+    { status },
   );
   return result.data;
 };
 
 export const updateAssignment = async (
   assignmentId: string,
-  data: z.infer<typeof assignmentsSchema>
+  data: z.infer<typeof assignmentsSchema>,
 ) => {
   const result = await api.put(
     `/internships/assignments/${assignmentId}`,
-    data
+    data,
   );
   return result.data;
 };
@@ -250,31 +257,38 @@ export const updateAssignment = async (
 export const submitAssignment = async (
   assignmentId: string,
   text_content: string,
-  status?: string
+  status?: string,
 ) => {
   const result = await api.post(
     `/internships/intern/assignments/${assignmentId}/submit`,
     {
       status,
       text_content,
-    }
+    },
   );
   return result.data;
 };
 
 export const uploadAssignmentFiles = async (
   assignmentId: string,
-  files: File[]
+  files: File[],
 ) => {
   const formData = new FormData();
-  files.forEach((file) => formData.append("assignment_submission_files", file));
+  files.forEach((file) => formData.append("assignment_files", file));
 
   const result = await api.post(
-    `/internships/assignments/${assignmentId}/submit-files`,
+    `/internships/intern/assignments/${assignmentId}/submit-files`,
     formData,
     {
       headers: { "Content-Type": "multipart/form-data" },
-    }
+    },
+  );
+  return result.data;
+};
+
+export const getAssignmentFiles = async (assignmentId: string) => {
+  const result = await api.get(
+    `/internships/assignments/${assignmentId}/files`,
   );
   return result.data;
 };

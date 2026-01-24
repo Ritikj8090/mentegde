@@ -1,168 +1,87 @@
 import { createBrowserRouter } from "react-router-dom";
 import MainLayout from "./MainLayout";
-import NotFound from "./pages/NotFound";
-import UserLanding from "./pages/UserLanding";
-import Naukri from "./pages/naukri";
+
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+
 import SignUp from "./pages/auth/Sign-up";
 import SignIn from "./pages/auth/Sign-in";
-import LogIn from "./pages/auth2/Sign-in";
 import MentorSignUp from "./pages/auth/Mentor-sign-up";
-import MentorScreen from "./pages/MentorScreen";
-import MentorProfile from "./pages/MentorProfile";
-import TopMentors from "./pages/TopMentors";
-import MentorDashboard from "./pages/MentorDashboard";
-import SettingsPage from "./pages/Setting";
-import Dashboard from "./pages/Dashboard";
 import MentorSignIn from "./pages/auth/Mentor-sign-in";
-import Chat from "./pages/Chat";
-import Onboarding from "./pages/Onboarding";
-import CreateSession from "./pages/CreateSession";
-// import Test from "./pages/Test";
-import ProtectedRoute from "./components/ProtectedRoute";
-import PublicRoute from "./components/PublicRoute";
-import AccessDenied from "./pages/AccessDenied";
-import LiveSession from "./pages/LiveSession";
-import Test from "./pages/Test";
-import UserDashboardPage from "./pages/UserDashboard";
-import MentorLanding from "./pages/mentor";
-
-import MentorProfiles from "./pages/MentorProfile";
-import InternDashboard from "./pages/InternDashboard";
-import ProductWorkbook from "./pages/ProductWorkboard";
-import MentorDashboardTwo from "./pages/MentorDashboardTwo";
-import CreateInternship from "./pages/mentorDashboard/InternshipOverview";
-import InternshipDashboard from "./pages/mentorDashboard/Internship-dash";
 import UserSignIn from "./pages/auth/User-sign-in";
 import UserSignUp from "./pages/auth/User-sign-up";
+
+import ProtectedRoute from "./components/ProtectedRoute";
+import PublicRoute from "./components/PublicRoute";
+
+import Dashboard from "./pages/Dashboard";
+import SettingsPage from "./pages/Setting";
+import Onboarding from "./pages/onboarding/Onboarding";
+import MentorProfile from "./pages/MentorProfile";
+import MentorProfiles from "./pages/MentorProfile";
 import UserProfilePage from "./pages/userProfile";
-import InternshipPage from "./pages/manageInternship/InternshipPage";
+import InternshipDashboard from "./pages/mentorDashboard/Internship-dash";
 import WorkboardPage from "./pages/workboard/WorkboardPage";
+
+import AccessDenied from "./pages/AccessDenied";
+import Test from "./pages/Test";
+import InternshipPage from "./pages/manageInternship/InternshipPage";
+import { PaymentPage } from "./pages/payment/PaymentPage";
+import ChatChannelPage from "./pages/chatChannel/ChatChannelPage";
+import ChatPage from "./pages/chats/Chatpage";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <MainLayout />,
     children: [
-      { path: "/internship-dashboard", element: <InternshipDashboard /> },
-
-      { path: "/user/dashboard", element: <InternDashboard /> },
-      { path: "/mentor/profile", element: <MentorProfiles /> },
-      { path: "/productworkboard", element: <ProductWorkbook /> },
-
-      { path: "/create", element: <CreateInternship /> },
-
-      { path: "/mentor-dash", element: <MentorDashboardTwo /> },
+      /* 🌍 PUBLIC ROUTES */
       {
-        index: true,
-        element: (
-          <PublicRoute>
-            <Home />
-          </PublicRoute>
-        ),
-      },
-      {
-        path: "sign-in",
-        element: (
-          <PublicRoute>
-            <SignIn />
-          </PublicRoute>
-        ),
-      },
-      {
-        path: "sign-up",
-        element: (
-          <PublicRoute>
-            <SignUp />
-          </PublicRoute>
-        ),
-      },
-      {
-        path: "sign-in/user",
-        element: (
-          <PublicRoute>
-            <UserSignIn />
-          </PublicRoute>
-        ),
-      },
-      {
-        path: "sign-up/user",
-        element: (
-          <PublicRoute>
-            <UserSignUp />
-          </PublicRoute>
-        ),
-      },
-      {
-        path: "sign-up/mentor",
-        element: (
-          <PublicRoute>
-            <MentorSignUp />
-          </PublicRoute>
-        ),
-      },
-      {
-        path: "sign-in/mentor",
-        element: (
-          <PublicRoute>
-            <MentorSignIn />
-          </PublicRoute>
-        ),
-      },
-      { path: "test", element: <Test /> },
-      // Shared Routes
-
-      {
-        path: "*",
-        element: <ProtectedRoute />, // No roles specified means both roles can access
+        element: <PublicRoute />,
         children: [
-          { path: "onboarding", element: <Onboarding /> },
-          { path: "user/profile", element: <UserProfilePage /> },
-          { path: "mentor/profile", element: <MentorProfiles /> },
-          { path: "workboard/:internshipId", element: <WorkboardPage /> },
-          { path: "dashboard", element: <Dashboard /> },
-          { path: "mentor-profile/:id", element: <MentorProfile /> },
-          { path: "mentor/:id", element: <MentorScreen /> },
-          { path: "settings", element: <SettingsPage /> },
-          { path: "live-session", element: <LiveSession /> },
+          { index: true, element: <Home /> },
+          { path: "sign-in", element: <SignIn /> },
+          { path: "sign-up", element: <SignUp /> },
+          { path: "sign-in/user", element: <UserSignIn /> },
+          { path: "sign-up/user", element: <UserSignUp /> },
+          { path: "sign-in/mentor", element: <MentorSignIn /> },
+          { path: "sign-up/mentor", element: <MentorSignUp /> },
           { path: "about", element: <About /> },
           { path: "contact", element: <Contact /> },
-          { path: "chat", element: <Chat /> },
-          { path: "settings", element: <SettingsPage /> },
-          { path: "top-mentors", element: <TopMentors /> },
         ],
       },
 
-      //User routes
-      // Protected Routes (Require Authentication)
+      /* 🔒 PROTECTED ROUTES */
       {
-        path: "*",
-        element: <ProtectedRoute allowedRoles={["user"]} />,
+        element: <ProtectedRoute />,
         children: [
-          { path: "user/dashboard", element: <UserDashboardPage /> },
-          { path: "top-mentors", element: <TopMentors /> },
-          { path: "live-session", element: <LiveSession /> },
-        ],
-      },
-
-      // 🧑‍🏫 Mentor-only routes
-      {
-        path: "*",
-        element: <ProtectedRoute allowedRoles={["mentor"]} />,
-        children: [
-          { path: "mentor/dashboard", element: <MentorDashboard /> },
-          { path: "mentor-profile", element: <MentorProfile /> },
-          { path: "mentor/:id", element: <MentorScreen /> },
-          { path: "create-session", element: <CreateSession /> },
+          { path: "dashboard", element: <Dashboard /> },
           { path: "internship-overview", element: <InternshipPage /> },
+          { path: "onboarding", element: <Onboarding /> },
+          { path: "settings", element: <SettingsPage /> },
+          { path: "chat", element: <ChatPage /> },
+
+          { path: "user/profile", element: <UserProfilePage /> },
+          { path: "mentor/profile", element: <MentorProfiles /> },
+          { path: "mentor-profile/:id", element: <MentorProfile /> },
+
+          { path: "workboard/:internshipId", element: <WorkboardPage /> },
+          { path: "payment", element: <PaymentPage /> },
+          {
+            path: "internship-chat/:internshipId",
+            element: <ChatChannelPage />,
+          },
+          { path: "test", element: <Test /> },
         ],
       },
+
       { path: "access-denied", element: <AccessDenied /> },
     ],
   },
-  { path: "*", element: <NotFound /> },
+
+  /* ❌ NOT FOUND */
+  { path: "*", element: <>Not Found</> },
 ]);
 
 export default router;

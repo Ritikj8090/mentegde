@@ -1,237 +1,334 @@
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
-  BookOpen,
-  Briefcase,
-  Clock,
-  Award,
-  FileText,
-  Link2,
-  Star,
-  Target,
-  CreditCard,
-  Building2,
+  MapPin,
   Mail,
-  Users,
-  Edit,
-} from "lucide-react"
+  GraduationCap,
+  Code2,
+  Target,
+  Linkedin,
+  Github,
+  Book,
+  Earth,
+  Heart,
+  LetterText,
+  File,
+  Link,
+  Clock,
+  Phone,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import { getCurrentUser } from "@/utils/auth";
+import Loading from "@/components/Loading";
+import { FrontEndUserProfile } from "..";
+import { format, parseISO } from "date-fns";
+import { calculateAge } from "@/constant/HelperFunctions";
+import { FaGenderless } from "react-icons/fa";
+import { UPLOAD_PHOTOS_URL } from "@/components/config/CommonBaseUrl";
 
-const MentorProfile =() => {
+const MentorProfilePage = () => {
+  const [user, setUser] = useState<FrontEndUserProfile>();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await getCurrentUser();
+        setUser(response.data);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  if (!user) {
+    return <Loading />;
+  }
   return (
-    <div className="min-h-screen container py-12 md:px-4 md:py-10 mx-auto">
-      <div className="container mx-auto px-4 py-12 max-w-6xl">
-        {/* Header Section */}
-        <div className="mb-12 text-center">
-          <div className="flex justify-center mb-6">
-            <Avatar className="h-32 w-32 ring-4 ring-primary/10 ring-offset-4 ring-offset-background">
-              <AvatarImage src="/professional-mentor.png" alt="Aarav Sharma" />
-              <AvatarFallback className="text-4xl bg-gradient-to-br from-primary to-accent text-primary-foreground">
-                AS
-              </AvatarFallback>
-            </Avatar>
-          </div>
-          <h1 className="text-4xl font-bold mb-3 text-balance">Aarav Sharma</h1>
-          <p className="text-lg text-muted-foreground mb-4 max-w-2xl mx-auto text-pretty">
-            Senior software engineer with a passion for mentoring early-career developers.
+    <div className="mx-auto min-h-screen container py-12 md:px-4 md:py-10 space-y-5">
+      {/* Header Section */}
+      <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 group">
+        <CardContent className=" flex items-center justify-center flex-col">
+          <Avatar className="mb-6 h-32 w-32 border-4 border-primary/20 ring-2 ring-primary/10">
+            <AvatarImage src={UPLOAD_PHOTOS_URL + user.avatar} alt={user.full_name} />
+            <AvatarFallback className="bg-primary/10 text-3xl font-semibold text-primary">
+              {user.full_name
+                .split(" ")
+                .map((n) => n[0])
+                .join("")}
+            </AvatarFallback>
+          </Avatar>
+          <h1 className="mb-3 text-4xl font-bold tracking-tight md:text-5xl">
+            {user.full_name}
+          </h1>
+
+          <p className="mb-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
+            {user.bio}
           </p>
-          <div className="flex items-center justify-center gap-2 text-muted-foreground">
-            <Mail className="h-4 w-4" />
-            <span className="text-sm">aarav.mentor@example.com</span>
+
+          <div className="flex flex-col gap-2 text-sm text-muted-foreground sm:flex-row sm:gap-4 mb-2">
+            <div className="flex items-center justify-center gap-1">
+              <Clock className="h-4 w-4" />
+
+              {calculateAge(user.date_of_birth) + " years old"}
+            </div>
+            <div>|</div>
+            <div className="flex items-center justify-center gap-1">
+              <FaGenderless className="h-4 w-4" />
+              <span>{user.gender.toUpperCase()}</span>
+            </div>
           </div>
-        </div>
 
-        {/* Main Grid */ }
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {/* Expertise Area */}
-          <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 p-6 hover:shadow-lg transition-all duration-300 border-border/50 bg-card/50 backdrop-blur-sm">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 rounded-lg bg-primary/10">
-                <BookOpen className="h-5 w-5 text-primary" />
-              </div>
-              <h2 className="text-xl font-semibold">Expertise Area</h2>
+          <div className="flex flex-col gap-2 text-sm text-muted-foreground sm:flex-row sm:gap-4">
+            <div className="flex items-center justify-center gap-2">
+              <Mail className="h-4 w-4" />
+              <a
+                href={`mailto:${user.email}`}
+                className="hover:text-foreground transition-colors"
+              >
+                {user.email}
+              </a>
             </div>
-            <p className="text-foreground">Full Stack Development</p>
-          </Card>
+            <div>|</div>
+            <div className="flex items-center justify-center gap-2">
+              <Phone className="h-4 w-4" />
+              <span>{user.phone_number}</span>
+            </div>
+            <div>|</div>
+            <div className="flex items-center justify-center gap-2">
+              <MapPin className="h-4 w-4" />
+              <span>{user.current_city + ", " + user.current_state}</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-          {/* Years of Experience */}
-          <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 p-6 hover:shadow-lg transition-all duration-300 border-border/50 bg-card/50 backdrop-blur-sm">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 rounded-lg bg-accent/10">
-                <Briefcase className="h-5 w-5 text-accent" />
+      {/* Content Grid */}
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Education Card */}
+        <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 group">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <GraduationCap className="h-5 w-5" />
               </div>
-              <h2 className="text-xl font-semibold">Years of Experience</h2>
+              <CardTitle className="text-xl">Education</CardTitle>
             </div>
-            <p className="text-foreground font-semibold text-2xl">7 years</p>
-          </Card>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <div className="font-semibold text-foreground">
+              {user.educations[0].institution}
+            </div>
+            <div className="text-sm text-muted-foreground">
+              {user.educations[0].highest_degree}
+            </div>
+            <div className="text-sm text-muted-foreground">
+              Graduation:{" "}
+              <span className="font-medium text-foreground">
+                {user.educations[0].graduation_year}
+              </span>
+            </div>
+          </CardContent>
+        </Card>
 
-          {/* Availability */}
-          <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 p-6 hover:shadow-lg transition-all duration-300 border-border/50 bg-card/50 backdrop-blur-sm">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 rounded-lg bg-chart-2/10">
-                <Clock className="h-5 w-5 text-chart-2" />
+        {/* Skills Card */}
+        <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 group">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <Code2 className="h-5 w-5" />
               </div>
-              <h2 className="text-xl font-semibold">Availability</h2>
+              <CardTitle className="text-xl">Skills</CardTitle>
             </div>
-            <p className="text-foreground font-semibold text-2xl">10 hrs/week</p>
-          </Card>
-
-          {/* LinkedIn / Portfolio */}
-          <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 p-6 hover:shadow-lg transition-all duration-300 border-border/50 bg-card/50 backdrop-blur-sm">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 rounded-lg bg-chart-3/10">
-                <Link2 className="h-5 w-5 text-chart-3" />
-              </div>
-              <h2 className="text-xl font-semibold">LinkedIn / Portfolio</h2>
-            </div>
-            <Button variant="link" className="p-0 h-auto font-medium text-primary hover:text-primary/80">
-              View Profile
-            </Button>
-          </Card>
-
-          {/* Resume */}
-          <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 p-6 hover:shadow-lg transition-all duration-300 border-border/50 bg-card/50 backdrop-blur-sm">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 rounded-lg bg-chart-1/10">
-                <FileText className="h-5 w-5 text-chart-1" />
-              </div>
-              <h2 className="text-xl font-semibold">Resume</h2>
-            </div>
-            <Button variant="link" className="p-0 h-auto font-medium text-primary hover:text-primary/80">
-              View Resume
-            </Button>
-          </Card>
-
-          {/* Mentees Guided */}
-          <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 p-6 hover:shadow-lg transition-all duration-300 border-border/50 bg-card/50 backdrop-blur-sm">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 rounded-lg bg-chart-4/10">
-                <Users className="h-5 w-5 text-chart-4" />
-              </div>
-              <h2 className="text-xl font-semibold">Mentees Guided</h2>
-            </div>
+          </CardHeader>
+          <CardContent>
             <div className="flex flex-wrap gap-2">
-              <Badge variant="secondary" className="text-sm">
-                DSA
-              </Badge>
-              <Badge variant="secondary" className="text-sm">
-                System Design
-              </Badge>
-              <Badge variant="secondary" className="text-sm">
-                React
-              </Badge>
-              <Badge variant="secondary" className="text-sm">
-                Career Guidance
-              </Badge>
+              {user.skills.map((skill) => (
+                <Badge
+                  key={skill}
+                  variant="secondary"
+                  className="px-3 py-1 text-sm transition-colors hover:bg-primary hover:text-primary-foreground"
+                >
+                  {skill}
+                </Badge>
+              ))}
             </div>
-          </Card>
-
-          {/* Certificates - Full Width on Mobile, Spans 2 on Desktop */}
-          <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 p-6 hover:shadow-lg transition-all duration-300 border-border/50 bg-card/50 backdrop-blur-sm md:col-span-2 lg:col-span-1">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 rounded-lg bg-chart-5/10">
-                <Award className="h-5 w-5 text-chart-5" />
+          </CardContent>
+        </Card>
+        {/* Experience Card */}
+        {user?.experience && (
+          <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 group">
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <GraduationCap className="h-5 w-5" />
+                </div>
+                <CardTitle className="text-xl">Experience</CardTitle>
               </div>
-              <h2 className="text-xl font-semibold">Certificates</h2>
-            </div>
-            <div className="space-y-2">
-              <Button variant="link" className="p-0 h-auto font-medium text-primary hover:text-primary/80 block">
-                View Certificate 1
-              </Button>
-              <Button variant="link" className="p-0 h-auto font-medium text-primary hover:text-primary/80 block">
-                View Certificate 2
-              </Button>
-            </div>
-          </Card>
-
-          {/* Badges */}
-          <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 p-6 hover:shadow-lg transition-all duration-300 border-border/50 bg-card/50 backdrop-blur-sm md:col-span-2 lg:col-span-1">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 rounded-lg bg-primary/10">
-                <Target className="h-5 w-5 text-primary" />
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <div className=" flex items-center justify-between">
+                <div className="font-semibold text-foreground">
+                  {user.experience[0].title}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Experience:{" "}
+                  <span className="font-medium text-foreground">
+                    {user.experience[0].experience + " years"}
+                  </span>
+                </div>
               </div>
-              <h2 className="text-xl font-semibold">Badges</h2>
+              <div className="text-sm text-muted-foreground">
+                {user.experience[0].company +
+                  ", " +
+                  user.experience[0].location}
+              </div>
+              <div className="text-sm text-muted-foreground">
+                Industry:{" "}
+                <span className="font-medium text-foreground">
+                  {user.experience[0].industry}
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Social Media Card */}
+        <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 group">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <Target className="h-5 w-5" />
+              </div>
+              <CardTitle className="text-xl">Social Media</CardTitle>
             </div>
+          </CardHeader>
+          <CardContent className=" grid grid-cols-2">
+            <a href={user.linkedin_link} className=" flex items-center gap-1">
+              <Linkedin size={17} />
+              <span className=" text-lg font-bold">LinkedIn</span>
+            </a>
+            <a href={user.github_link} className=" flex items-center gap-1">
+              <Github size={17} />
+              <span className=" text-lg font-bold">Github</span>
+            </a>
+            <a href={user.resume_link} className=" flex items-center gap-1">
+              <Book size={17} />
+              <span className=" text-lg font-bold">Resume</span>
+            </a>
+            {user.portfolio_link && (
+              <a
+                href={user.portfolio_link}
+                className=" flex items-center gap-1"
+              >
+                <Earth size={17} />
+                <span className=" text-lg font-bold">Portfolio</span>
+              </a>
+            )}
+          </CardContent>
+        </Card>
+        {/* Interests Card */}
+        <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 group">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <Heart className="h-5 w-5" />
+              </div>
+              <CardTitle className="text-xl">Interests</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
             <div className="flex flex-wrap gap-2">
-              <Badge variant="default" className="bg-gradient-to-r from-primary to-accent text-primary-foreground">
-                Top Mentor
-              </Badge>
-              <Badge variant="default" className="bg-gradient-to-r from-chart-2 to-chart-3 text-white">
-                Career Coach
-              </Badge>
-              <Badge variant="default" className="bg-gradient-to-r from-chart-4 to-chart-5 text-white">
-                5+ Mentor
-              </Badge>
+              {user.interests.map((interest) => (
+                <Badge
+                  key={interest}
+                  variant="secondary"
+                  className="px-3 py-1 text-sm transition-colors hover:bg-primary hover:text-primary-foreground"
+                >
+                  {interest}
+                </Badge>
+              ))}
             </div>
-          </Card>
-
-          {/* Feedback */}
-          <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 p-6 hover:shadow-lg transition-all duration-300 border-border/50 bg-card/50 backdrop-blur-sm md:col-span-2 lg:col-span-1">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 rounded-lg bg-accent/10">
-                <Star className="h-5 w-5 text-accent" />
+          </CardContent>
+        </Card>
+        {/* Languages Card */}
+        <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 group">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <LetterText className="h-5 w-5" />
               </div>
-              <h2 className="text-xl font-semibold">Feedback</h2>
+              <CardTitle className="text-xl">Languges</CardTitle>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="flex">
-                {[1, 2, 3, 4].map((star) => (
-                  <Star key={star} className="h-5 w-5 fill-accent text-accent" />
-                ))}
-                <Star className="h-5 w-5 fill-accent/50 text-accent/50" />
-              </div>
-              <span className="font-semibold">4.5</span>
-              <span className="text-muted-foreground text-sm">from 120+ mentees</span>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              {user.languages.map((language) => (
+                <Badge
+                  key={language}
+                  variant="secondary"
+                  className="px-3 py-1 text-sm transition-colors hover:bg-primary hover:text-primary-foreground"
+                >
+                  {language}
+                </Badge>
+              ))}
             </div>
-          </Card>
-
-          {/* UPI ID */}
-          <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 p-6 hover:shadow-lg transition-all duration-300 border-border/50 bg-card/50 backdrop-blur-sm">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 rounded-lg bg-chart-1/10">
-                <CreditCard className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 h-5 w-5 text-chart-1" />
-              </div>
-              <h2 className="text-xl font-semibold">UPI ID</h2>
-            </div>
-            <p className="text-foreground font-mono text-sm">aarav@upi</p>
-          </Card>
-
-          {/* Bank Details - Spans Full Width */}
-          <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 p-6 hover:shadow-lg transition-all duration-300 border-border/50 bg-card/50 backdrop-blur-sm md:col-span-2">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 rounded-lg bg-chart-2/10">
-                <Building2 className="h-5 w-5 text-chart-2" />
-              </div>
-              <h2 className="text-xl font-semibold">Bank Details</h2>
-            </div>
-            <div className="grid gap-2 sm:grid-cols-3">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Account Holder</p>
-                <p className="font-medium">Aarav Sharma</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Account Number</p>
-                <p className="font-mono font-medium">******9012</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">IFSC</p>
-                <p className="font-mono font-medium">HDFC0001234</p>
-              </div>
-            </div>
-          </Card>
-        </div>
-
-        {/* Edit Button */}
-        <div className="mt-8 flex justify-end">
-          <Button size="lg" className="gap-2 shadow-lg hover:shadow-xl transition-all duration-300">
-            <Edit className="h-4 w-4" />
-            Edit Profile
-          </Button>
-        </div>
+          </CardContent>
+        </Card>
       </div>
+      {user.certificates.length > 0 && (
+        <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 group">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <File className="h-5 w-5" />
+              </div>
+              <CardTitle className="text-xl">Certificates</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent className=" space-y-5 grid grid-cols-2 gap-5">
+            {user.certificates.map((certificate) => (
+              <Card
+                key={certificate.link}
+                className="bg-card/50 backdrop-blur-sm border-border/50 group"
+              >
+                <CardContent className="space-y-2">
+                  <div className=" flex items-center justify-between">
+                    <div className="font-semibold text-foreground">
+                      {certificate.name}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      {format(
+                        parseISO(certificate.start_date.toString()),
+                        "MMM dd, yyyy"
+                      )}{" "}
+                      -{" "}
+                      {format(
+                        parseISO(certificate.end_date.toString()),
+                        "MMM dd, yyyy"
+                      )}
+                    </div>
+                  </div>
+                  <div className=" flex items-center justify-between">
+                    <div className="text-sm text-muted-foreground">
+                      {certificate.provider}
+                    </div>
+                    <a
+                      className=" flex items-center gap-2 border w-fit py-1 px-2 rounded-lg text-sm"
+                      href={certificate.link}
+                    >
+                      <Link size={15} />
+                    </a>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </CardContent>
+        </Card>
+      )}
     </div>
-  )
-}
-
-export default MentorProfile
+  );
+};
+export default MentorProfilePage;

@@ -21,14 +21,14 @@ import {
 import { useEffect, useState } from "react";
 import { getCurrentUser } from "@/utils/auth";
 import Loading from "@/components/Loading";
-import { FrontendUserProfile } from "..";
+import { FrontEndUserProfile } from "..";
 import { format, parseISO } from "date-fns";
 import { calculateAge } from "@/constant/HelperFunctions";
 import { FaGenderless } from "react-icons/fa";
 import { UPLOAD_PHOTOS_URL } from "@/components/config/CommonBaseUrl";
 
 const UserProfilePage = () => {
-  const [user, setUser] = useState<FrontendUserProfile>();
+  const [user, setUser] = useState<FrontEndUserProfile>();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -147,18 +147,18 @@ const UserProfilePage = () => {
             <div className="flex flex-wrap gap-2">
               {user.skills.map((skill) => (
                 <Badge
-                  key={skill.id}
+                  key={skill}
                   variant="secondary"
                   className="px-3 py-1 text-sm transition-colors hover:bg-primary hover:text-primary-foreground"
                 >
-                  {skill.skill}
+                  {skill}
                 </Badge>
               ))}
             </div>
           </CardContent>
         </Card>
         {/* Experience Card */}
-        {user?.experiences && (
+        {user?.experience && (
           <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 group">
             <CardHeader>
               <div className="flex items-center gap-3">
@@ -171,24 +171,24 @@ const UserProfilePage = () => {
             <CardContent className="space-y-2">
               <div className=" flex items-center justify-between">
                 <div className="font-semibold text-foreground">
-                  {user.experiences[0].title}
+                  {user.experience[0].title}
                 </div>
                 <div className="text-sm text-muted-foreground">
                   Experience:{" "}
                   <span className="font-medium text-foreground">
-                    {user.experiences[0].experience + " years"}
+                    {user.experience[0].experience + " years"}
                   </span>
                 </div>
               </div>
               <div className="text-sm text-muted-foreground">
-                {user.experiences[0].company +
+                {user.experience[0].company +
                   ", " +
-                  user.experiences[0].location}
+                  user.experience[0].location}
               </div>
               <div className="text-sm text-muted-foreground">
                 Industry:{" "}
                 <span className="font-medium text-foreground">
-                  {user.experiences[0].industry}
+                  {user.experience[0].industry}
                 </span>
               </div>
             </CardContent>
@@ -243,11 +243,11 @@ const UserProfilePage = () => {
             <div className="flex flex-wrap gap-2">
               {user.interests.map((interest) => (
                 <Badge
-                  key={interest.id}
+                  key={interest}
                   variant="secondary"
                   className="px-3 py-1 text-sm transition-colors hover:bg-primary hover:text-primary-foreground"
                 >
-                  {interest.interest}
+                  {interest}
                 </Badge>
               ))}
             </div>
@@ -267,18 +267,18 @@ const UserProfilePage = () => {
             <div className="flex flex-wrap gap-2">
               {user.languages.map((language) => (
                 <Badge
-                  key={language.id}
+                  key={language}
                   variant="secondary"
                   className="px-3 py-1 text-sm transition-colors hover:bg-primary hover:text-primary-foreground"
                 >
-                  {language.language}
+                  {language}
                 </Badge>
               ))}
             </div>
           </CardContent>
         </Card>
       </div>
-      {user.certificates && (
+      {user.certificates.length > 0 && (
         <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 group">
           <CardHeader>
             <div className="flex items-center gap-3">

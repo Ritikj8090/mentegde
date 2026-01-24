@@ -29,12 +29,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { defaultValues, internshipSchema } from "./schema";
+import { internshipSchema } from "./schema";
 import DomainSection from "./DomainSection";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState } from "react";
-import { UserProfile } from "@/index";
+import { Internship, UserProfile } from "@/index";
 import { findMentors } from "@/utils/mentorAuth";
 import { createInternship } from "@/utils/internship";
 import { UPLOAD_PHOTOS_URL } from "@/components/config/CommonBaseUrl";
@@ -62,7 +62,7 @@ export const demo: z.infer<typeof internshipSchema> = {
     application_deadline: new Date("2026-01-25"),
     weekly_hours: 10,
     duration: "8 Weeks",
-    difficulty_level: "Intermediate",
+    difficulty_level: "intermediate",
     marketplace_category: "AI & SaaS",
     max_seats: 25,
     certificate_provided: true,
@@ -76,7 +76,7 @@ export const demo: z.infer<typeof internshipSchema> = {
       "Product Management",
       "Market Research",
       "Business Analysis",
-      "User Interviews"
+      "User Interviews",
     ],
     tools_used: ["Notion", "Figma", "Google Sheets"],
     tags: ["Product", "Startup", "Business"],
@@ -85,25 +85,26 @@ export const demo: z.infer<typeof internshipSchema> = {
     application_deadline: new Date("2026-01-25"),
     weekly_hours: 5,
     duration: "8 Weeks",
-    difficulty_level: "Beginner",
+    difficulty_level: "beginner",
     marketplace_category: "Product & Strategy",
     max_seats: 25,
     certificate_provided: true,
   },
 };
 
-
 export function CreateInternship({
   open,
   setOpen,
+  setInternships,
 }: {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setInternships: React.Dispatch<React.SetStateAction<Internship[]>>;
 }) {
   const [openCoHost, setOpenCoHost] = useState(false);
   const [mentors, setMentors] = useState<UserProfile[] | null>(null);
   const [selectedCoHost, setSelectedCoHost] = useState<UserProfile | null>(
-    null
+    null,
   );
   const form = useForm<z.infer<typeof internshipSchema>>({
     resolver: zodResolver(internshipSchema),
@@ -123,12 +124,13 @@ export function CreateInternship({
   };
 
   const onSubmit = async (data: z.infer<typeof internshipSchema>) => {
-    console.log(data);
     const res = await createInternship(data);
-    console.log(res);
     if (res) {
+      setInternships((prev: Internship[]) => [res, ...prev]);
       setOpen(false);
     }
+    console.log(res);
+    console.log(data);
   };
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -197,7 +199,7 @@ export function CreateInternship({
                         onChange={(e) => search(e.target.value)}
                       />
                     </FormControl>
-                    {form.watch("co_host_name")?.length >= 2 && openCoHost && (
+                    {(form.watch("co_host_name") || "").length >= 2 && openCoHost && (
                       <Card className=" p-2">
                         <CardContent className=" space-y-3 px-2 max-h-100 overflow-y-scroll">
                           {mentors &&
@@ -208,13 +210,15 @@ export function CreateInternship({
                                 onClick={() => {
                                   setSelectedCoHost(mentor);
                                   setOpenCoHost(false);
-                                  form.setValue("co_host_id", mentor.id)
+                                  form.setValue("co_host_id", mentor.id);
                                 }}
                               >
                                 <CardContent>
                                   <div className="flex items-center gap-2">
                                     <Avatar>
-                                      <AvatarImage src={UPLOAD_PHOTOS_URL + mentor.avatar} />
+                                      <AvatarImage
+                                        src={UPLOAD_PHOTOS_URL + mentor.avatar}
+                                      />
                                       <AvatarFallback>CN</AvatarFallback>
                                     </Avatar>
                                     <div>
@@ -241,7 +245,9 @@ export function CreateInternship({
                   <Card>
                     <CardContent className="flex items-center gap-2">
                       <Avatar>
-                        <AvatarImage src={UPLOAD_PHOTOS_URL + selectedCoHost.avatar} />
+                        <AvatarImage
+                          src={UPLOAD_PHOTOS_URL + selectedCoHost.avatar}
+                        />
                         <AvatarFallback>CN</AvatarFallback>
                       </Avatar>
                       <div>
@@ -310,14 +316,14 @@ export function CreateInternship({
                   title="Management"
                 />
               )}
-            <DialogFooter>
-              <Button type="submit" className=" w-full">
-                Create Internship
-              </Button>
-              <DialogClose asChild>
-                <Button variant="outline">Cancel</Button>
-              </DialogClose>
-            </DialogFooter>
+              <DialogFooter>
+                <Button type="submit" className=" w-full">
+                  Create Internship
+                </Button>
+                <DialogClose asChild>
+                  <Button variant="outline">Cancel</Button>
+                </DialogClose>
+              </DialogFooter>
             </div>
           </form>
         </Form>

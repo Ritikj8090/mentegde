@@ -10,6 +10,7 @@ import useAuth from "@/hooks/useAuth";
 import Loading from "@/components/Loading";
 import { useSelector } from "react-redux";
 import { RootState } from "@/components/store/store";
+import { CustomToastProvider } from "./components/Toaster";
 
 const MainLayout = () => {
   const [menuToggle, setMenuToggle] = useState(false);
@@ -24,14 +25,16 @@ const MainLayout = () => {
 
   return (
     <ThemeProvider>
-      <SidebarProvider defaultOpen={false} open={menuToggle}>
-        <Navbar setMenuToggle={setMenuToggle} menuToggle={menuToggle} />
-        {isAuthenticated && <AppSidebar />}
-        <main className="pt-16 flex w-full min-h-screen">
-          <Outlet /> {/* Child components will be rendered here */}
-          <Toaster />
-        </main>
-      </SidebarProvider>
+      <CustomToastProvider>
+        <SidebarProvider defaultOpen={false} open={menuToggle}>
+          <Navbar setMenuToggle={setMenuToggle} menuToggle={menuToggle} />
+          {isAuthenticated && <AppSidebar />}
+          <main className="pt-16 flex w-full min-h-screen">
+            <Outlet /> {/* Child components will be rendered here */}
+            <Toaster />
+          </main>
+        </SidebarProvider>
+      </CustomToastProvider>
     </ThemeProvider>
   );
 };

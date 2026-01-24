@@ -7,11 +7,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
-import { useForm, UseFormReturn } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import {
   FormField,
   FormItem,
@@ -39,24 +38,30 @@ import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
-import { domainSchema, internshipSchema } from "./schema";
+import { domainSchema } from "./schema";
 import { ArrayInputField } from "@/components/ArrayInptField";
 import { Switch } from "@/components/ui/switch";
 import { Internship } from "@/index";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { submitCohostDomain } from "@/utils/internship";
+import { Toaster } from "@/components/Toaster";
 
 interface AcceptRequestCohostProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  internshipsRequest: Internship;
+  internshipsRequestMyRoleDomain: string;
+  internshipsRequestId: string;
+  setInternshipData: React.Dispatch<React.SetStateAction<Internship[]>>;
 }
 
 const AcceptRequestCohost = ({
   open,
   setOpen,
-  internshipsRequest,
+  internshipsRequestId,
+  internshipsRequestMyRoleDomain,
+  setInternshipData,
 }: AcceptRequestCohostProps) => {
+  const { addToast } = Toaster();
   const form = useForm<z.infer<typeof domainSchema>>({
     resolver: zodResolver(domainSchema),
     defaultValues: {
@@ -76,30 +81,38 @@ const AcceptRequestCohost = ({
       application_deadline: new Date("2026-01-25"),
       weekly_hours: 5,
       duration: "8 Weeks",
-      difficulty_level: "Beginner",
+      difficulty_level: "beginner",
       marketplace_category: "Product & Strategy",
       max_seats: 25,
       certificate_provided: true,
     },
   });
 
-  const onSubmit = async(data: z.infer<typeof domainSchema>) => {
-    const res = await submitCohostDomain(data, internshipsRequest.id);
-    console.log(res);
-  }
+  const onSubmit = async (data: z.infer<typeof domainSchema>) => {
+    const res = await submitCohostDomain(data, internshipsRequestId);
+    if (res) {
+      setOpen(false);
+      addToast({
+        type: "success",
+        title: "Success",
+        description: "Internship Request Accepted",
+        duration: 3000,
+      });
+      setInternshipData((prev: Internship[]) =>
+        prev.filter((item) => item.id !== internshipsRequestId),
+      );
+    }
+  };
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="min-w-[calc(100%-30rem)] max-h-[calc(100%-10rem)] overflow-y-scroll">
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className=" space-y-5"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className=" space-y-5">
             <DialogHeader>
               <DialogTitle>
                 Submit your{" "}
                 <span className=" capitalize">
-                  {internshipsRequest.my_role.domain}
+                  {internshipsRequestMyRoleDomain}
                 </span>{" "}
                 Co-host Request
               </DialogTitle>
@@ -109,7 +122,7 @@ const AcceptRequestCohost = ({
             </DialogHeader>
             <div className="border p-4 rounded space-y-6">
               <h3 className="font-semibold capitalize">
-                {internshipsRequest.my_role.domain} Mentor Section
+                {internshipsRequestMyRoleDomain} Mentor Section
               </h3>
               <FormField
                 control={form.control}
@@ -117,7 +130,7 @@ const AcceptRequestCohost = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className=" capitalize">
-                      {internshipsRequest.my_role.domain} Description
+                      {internshipsRequestMyRoleDomain} Description
                     </FormLabel>
                     <FormControl>
                       <Textarea {...field} rows={4} />
@@ -184,7 +197,7 @@ const AcceptRequestCohost = ({
                               variant={"outline"}
                               className={cn(
                                 "w-[240px] pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
+                                !field.value && "text-muted-foreground",
                               )}
                             >
                               {field.value ? (
@@ -228,7 +241,7 @@ const AcceptRequestCohost = ({
                               variant={"outline"}
                               className={cn(
                                 "w-[240px] pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
+                                !field.value && "text-muted-foreground",
                               )}
                             >
                               {field.value ? (
@@ -272,7 +285,7 @@ const AcceptRequestCohost = ({
                               variant={"outline"}
                               className={cn(
                                 "w-[240px] pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
+                                !field.value && "text-muted-foreground",
                               )}
                             >
                               {field.value ? (

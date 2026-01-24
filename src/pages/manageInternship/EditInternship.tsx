@@ -31,20 +31,24 @@ import { Internship, UserProfile } from "@/index";
 import { findMentors } from "@/utils/mentorAuth";
 import { editInternship } from "@/utils/internship";
 import { UPLOAD_PHOTOS_URL } from "@/components/config/CommonBaseUrl";
+import { Toaster } from "@/components/Toaster";
 
 export function EditInternship({
   open,
   setOpen,
   internship,
+  setWorkflowData,
 }: {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   internship: Internship;
+  setWorkflowData: React.Dispatch<React.SetStateAction<Internship[]>>;
 }) {
+  const { addToast } = Toaster();
   const [openCoHost, setOpenCoHost] = useState(false);
   const [mentors, setMentors] = useState<UserProfile[] | null>(null);
   const [selectedCoHost, setSelectedCoHost] = useState<UserProfile | null>(
-    null
+    null,
   );
   const demo: z.infer<typeof internshipSchema> = {
     internship_title: internship.internship_title ?? "",
@@ -60,19 +64,17 @@ export function EditInternship({
       internship.my_role.domain === "tech"
         ? {
             domain_name: internship.domains.tech?.domain_name ?? "",
-            domain_description: internship.domains.tech?.domain_description ?? "",
+            domain_description:
+              internship.domains.tech?.domain_description ?? "",
             skills_required: internship.domains.tech?.skills_required ?? [],
             tools_used: internship.domains.tech?.tools_used ?? [],
             tags: internship.domains.tech?.tags ?? [],
-            tasks: internship.domains.tech?.tasks ?? [],
-            deliverables: internship.domains.tech?.deliverables ?? [],
-            milestones: internship.domains.tech?.milestones ?? [],
             start_date: new Date(
-              internship.domains.tech?.start_date ?? Date.now()
+              internship.domains.tech?.start_date ?? Date.now(),
             ),
             end_date: new Date(internship.domains.tech?.end_date ?? Date.now()),
             application_deadline: new Date(
-              internship.domains.tech?.application_deadline ?? Date.now()
+              internship.domains.tech?.application_deadline ?? Date.now(),
             ),
             weekly_hours: Number(internship.domains.tech?.weekly_hours) || 0,
             duration: internship.domains.tech?.duration ?? "",
@@ -90,22 +92,20 @@ export function EditInternship({
       internship.my_role.domain === "management"
         ? {
             domain_name: internship.domains.management?.domain_name ?? "",
-            domain_description: internship.domains.management?.domain_description ?? "",
+            domain_description:
+              internship.domains.management?.domain_description ?? "",
             skills_required:
               internship.domains.management?.skills_required ?? [],
             tools_used: internship.domains.management?.tools_used ?? [],
             tags: internship.domains.management?.tags ?? [],
-            tasks: internship.domains.management?.tasks ?? [],
-            deliverables: internship.domains.management?.deliverables ?? [],
-            milestones: internship.domains.management?.milestones ?? [],
             start_date: new Date(
-              internship.domains.management?.start_date ?? Date.now()
+              internship.domains.management?.start_date ?? Date.now(),
             ),
             end_date: new Date(
-              internship.domains.management?.end_date ?? Date.now()
+              internship.domains.management?.end_date ?? Date.now(),
             ),
             application_deadline: new Date(
-              internship.domains.management?.application_deadline ?? Date.now()
+              internship.domains.management?.application_deadline ?? Date.now(),
             ),
             weekly_hours:
               Number(internship.domains.management?.weekly_hours) || 0,
@@ -137,8 +137,21 @@ export function EditInternship({
 
   const onSubmit = async (data: z.infer<typeof internshipSchema>) => {
     const res = await editInternship(data, internship.id);
-    console.log(data);
     if (res) {
+      addToast({
+        type: "success",
+        title: "Success",
+        description: "Internship Updated",
+        duration: 3000,
+      });
+      setWorkflowData((prev: Internship[]) =>
+        prev.map((item) => {
+          if (item.id === internship.id) {
+            return res;
+          }
+          return item;
+        }),
+      );
       setOpen(false);
     }
   };
@@ -216,41 +229,46 @@ export function EditInternship({
                         onChange={(e) => search(e.target.value)}
                       />
                     </FormControl>
-                    {form.watch("co_host_name")?.length >= 2 && openCoHost && (
-                      <Card className=" p-2">
-                        <CardContent className=" space-y-3 px-2 max-h-100 overflow-y-scroll">
-                          {mentors &&
-                            mentors.map((mentor) => (
-                              <Card
-                                key={mentor.id}
-                                className=" cursor-pointer"
-                                onClick={() => {
-                                  setSelectedCoHost(mentor);
-                                  setOpenCoHost(false);
-                                  form.setValue("co_host_id", mentor.id);
-                                }}
-                              >
-                                <CardContent>
-                                  <div className="flex items-center gap-2">
-                                    <Avatar>
-                                      <AvatarImage src={UPLOAD_PHOTOS_URL + mentor.avatar} />
-                                      <AvatarFallback>CN</AvatarFallback>
-                                    </Avatar>
-                                    <div>
-                                      <h1 className=" text-sm font-semibold">
-                                        {mentor.full_name}
-                                      </h1>
-                                      <p className="text-xs text-muted-foreground">
-                                        Data Scientist
-                                      </p>
+                    {(form.watch("co_host_name") || "").length >= 2 &&
+                      openCoHost && (
+                        <Card className=" p-2">
+                          <CardContent className=" space-y-3 px-2 max-h-100 overflow-y-scroll">
+                            {mentors &&
+                              mentors.map((mentor) => (
+                                <Card
+                                  key={mentor.id}
+                                  className=" cursor-pointer"
+                                  onClick={() => {
+                                    setSelectedCoHost(mentor);
+                                    setOpenCoHost(false);
+                                    form.setValue("co_host_id", mentor.id);
+                                  }}
+                                >
+                                  <CardContent>
+                                    <div className="flex items-center gap-2">
+                                      <Avatar>
+                                        <AvatarImage
+                                          src={
+                                            UPLOAD_PHOTOS_URL + mentor.avatar
+                                          }
+                                        />
+                                        <AvatarFallback>CN</AvatarFallback>
+                                      </Avatar>
+                                      <div>
+                                        <h1 className=" text-sm font-semibold">
+                                          {mentor.full_name}
+                                        </h1>
+                                        <p className="text-xs text-muted-foreground">
+                                          Data Scientist
+                                        </p>
+                                      </div>
                                     </div>
-                                  </div>
-                                </CardContent>
-                              </Card>
-                            ))}
-                        </CardContent>
-                      </Card>
-                    )}
+                                  </CardContent>
+                                </Card>
+                              ))}
+                          </CardContent>
+                        </Card>
+                      )}
                   </FormItem>
                 )}
               />
@@ -260,7 +278,9 @@ export function EditInternship({
                   <Card>
                     <CardContent className="flex items-center gap-2">
                       <Avatar>
-                        <AvatarImage src={UPLOAD_PHOTOS_URL +selectedCoHost.avatar} />
+                        <AvatarImage
+                          src={UPLOAD_PHOTOS_URL + selectedCoHost.avatar}
+                        />
                         <AvatarFallback>CN</AvatarFallback>
                       </Avatar>
                       <div>

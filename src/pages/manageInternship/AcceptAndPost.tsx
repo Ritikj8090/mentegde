@@ -9,28 +9,38 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Internship } from "@/index";
 import { acceptAndPost } from "@/utils/internship";
-import { CheckCircle2 } from "lucide-react";
 import React from "react";
 
 interface AcceptAndPostProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   internshipId: string;
+  setWorkflowData: React.Dispatch<React.SetStateAction<Internship[]>>;
 }
 
 export function AcceptAndPost({
   open,
   setOpen,
   internshipId,
+  setWorkflowData,
 }: AcceptAndPostProps) {
-  const [openToaster, setOpenToaster] = React.useState(false);
+  const { addToast } = Toaster();
   const handleAcceptAndPost = async () => {
     try {
       const res = await acceptAndPost(internshipId);
-      console.log(res);
       if (res) {
-        setOpenToaster(true);
+        addToast({
+          type: "success",
+          title: "Accepted Successfully",
+          description:
+            "Now this internship is published and will some in students dashboard.",
+          duration: 3000,
+        });
+        setWorkflowData((prev: Internship[]) =>
+          prev.filter((item) => item.id !== internshipId),
+        );
       }
     } catch (error) {
       console.error(error);
@@ -56,13 +66,6 @@ export function AcceptAndPost({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      <Toaster
-        open={openToaster}
-        title="Accepted Successfully"
-        description="Now this internship is published and will some in students dashboard."
-        icon={<CheckCircle2 className="text-green-500" />}
-        href="/internship-overview"
-      />
     </>
   );
 }

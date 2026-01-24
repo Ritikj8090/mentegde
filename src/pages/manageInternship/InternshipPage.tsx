@@ -10,8 +10,8 @@ import RequestCenter from "./RequestCenter";
 
 const InternshipPage = () => {
   const [open, setOpen] = React.useState(false);
-  const [internships, setInternships] = React.useState<Internship[] | null>(null);
-  const [internshipsRequests, setInternshipsRequests] = React.useState<Internship[] | null>(null);
+  const [internships, setInternships] = React.useState<Internship[]>([]);
+  const [internshipsRequests, setInternshipsRequests] = React.useState<Internship[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -20,14 +20,13 @@ const InternshipPage = () => {
         const internshipsRequests = await getCurrentMentorInternshipsRequests();
         setInternships(internships);
         setInternshipsRequests(internshipsRequests);
-        console.log(internships);
       } catch (error) {
         console.error(error);
       }
     };
     fetchData();
   }, []);
-  console.log(internshipsRequests);
+  
   if(!internships || !internshipsRequests)
     return <Loading />
 
@@ -39,12 +38,12 @@ const InternshipPage = () => {
           <Button onClick={() => setOpen(true)}>Create Internship</Button>
         </div>
         <div className=" grid grid-cols-5 gap-3 h-full">
-          <WorkFlowCenter internships={internships} />
-          <RequestCenter internshipsRequests={internshipsRequests}/>
+          <WorkFlowCenter internships={internships} setInternships={setInternships} />
+          <RequestCenter internshipsRequests={internshipsRequests} setInternshipsRequests={setInternshipsRequests} />
           {/* <StudentCenter /> */}
         </div>
       </div>
-      <CreateInternship open={open} setOpen={setOpen} />
+      <CreateInternship open={open} setOpen={setOpen} setInternships={setInternships} />
     </>
   );
 };

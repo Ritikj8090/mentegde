@@ -10,16 +10,7 @@ import {
 } from "@/components/ui/card";
 
 import { Progress } from "@/components/ui/progress";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Check,
-  User as UserIcon,
-  GraduationCap,
-  Briefcase,
-  Heart,
-  FileCheck,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, Check } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import PersonalInfo from "@/components/onboarding/PersonalInfo";
@@ -27,54 +18,25 @@ import EducationalInfo from "@/components/onboarding/EducationalInfo";
 import ProfessionalInfo from "@/components/onboarding/ProfessionalInfo";
 import {
   EducationSchema,
+  EducationSchemaDefaultValue,
   ExperienceSchema,
+  ExperienceSchemaDefaultValue,
   PersonalSchema,
+  PersonalSchemaDefaultValue,
   PreferencesSchema,
-} from "@/components/onboarding/schema";
+  PreferencesSchemaDefaultValue,
+} from "@/pages/onboarding/schema";
 import { z } from "zod";
 import { motion } from "framer-motion";
 import ReviewInfo from "@/components/onboarding/ReviewInfo";
 import Preference from "@/components/onboarding/Preference";
 import { Toaster } from "@/components/Toaster";
-import { tokenUser } from "@/index";
 import { mentorOnbording } from "@/utils/mentorAuth";
+import { steps } from ".";
 
-const steps = [
-  {
-    id: 1,
-    title: "Personal Information",
-    description: "Tell us about yourself",
-    icon: UserIcon,
-  },
-  {
-    id: 2,
-    title: "Educational Background",
-    description: "Your academic journey",
-    icon: GraduationCap,
-  },
-  {
-    id: 3,
-    title: "Professional Experience",
-    description: "Your work experience",
-    icon: Briefcase,
-  },
-  {
-    id: 4,
-    title: "Preferences & Interests",
-    description: "What interests you most",
-    icon: Heart,
-  },
-  {
-    id: 5,
-    title: "Review & Submit",
-    description: "Confirm your information",
-    icon: FileCheck,
-  },
-];
-
-export default function MentorOnboarding({ user }: { user: tokenUser }) {
+export default function MentorOnboarding() {
+  const { addToast } = Toaster();
   const [currentStep, setCurrentStep] = useState(1);
-  const [onboadedComplete, setOnboardedComplete] = useState(false);
 
   const prevStep = () => {
     if (currentStep > 1) {
@@ -84,71 +46,29 @@ export default function MentorOnboarding({ user }: { user: tokenUser }) {
 
   const Personalform = useForm<z.infer<typeof PersonalSchema>>({
     resolver: zodResolver(PersonalSchema),
-    defaultValues: {
-      full_name: user.full_name || "",
-      email: user.email || "",
-      gender: "",
-      date_of_birth: new Date(),
-      avatar: "",
-      phone_number: "",
-      bio: "",
-      hear_about: "",
-      current_status: "",
-      current_city: "",
-      current_state: "",
-    },
+    defaultValues: PersonalSchemaDefaultValue,
     mode: "onChange",
   });
 
   const Educationform = useForm<z.infer<typeof EducationSchema>>({
     resolver: zodResolver(EducationSchema),
-    defaultValues: {
-      educations: [
-        {
-          highest_degree: "",
-          institution: "",
-          field_of_study: "",
-          graduation_year: "",
-          gpa: "",
-        },
-      ],
-    },
+    defaultValues: EducationSchemaDefaultValue,
     mode: "onChange",
   });
 
   const Experienceform = useForm<z.infer<typeof ExperienceSchema>>({
     resolver: zodResolver(ExperienceSchema),
-    defaultValues: {
-      experience: [
-        {
-          company: "",
-          location: "",
-          experience: "",
-          industry: "",
-          title: "",
-        },
-      ],
-    },
+    defaultValues: ExperienceSchemaDefaultValue,
     mode: "onChange",
   });
 
   const Preferenceform = useForm<z.infer<typeof PreferencesSchema>>({
     resolver: zodResolver(PreferencesSchema),
-    defaultValues: {
-      skills: [],
-      languages: [],
-      certificates: [],
-      interests: [],
-      resume_link: "",
-      portfolio_link: "",
-      linkedin_link: "",
-      github_link: "",
-    },
+    defaultValues: PreferencesSchemaDefaultValue,
     mode: "onChange",
   });
 
   const handleSubmit = async () => {
-    console.log("Form submitted:", Personalform.getValues());
     try {
       const data = {
         ...Personalform.getValues(),
@@ -156,12 +76,17 @@ export default function MentorOnboarding({ user }: { user: tokenUser }) {
         ...Experienceform.getValues(),
         ...Preferenceform.getValues(),
       };
-      console.log("Form submitted:", data);
       const result = await mentorOnbording(data);
       if (result) {
-        setOnboardedComplete(true);
+        addToast({
+          type: "success",
+          title: "Onboarding Completed",
+          href: "/dashboard",
+          description:
+            "You have successfully completed the onboarding process.",
+          duration: 3000,
+        });
       }
-      console.log(result);
     } catch (error) {
       console.error("Error submitting form:", error);
     }
@@ -188,7 +113,6 @@ export default function MentorOnboarding({ user }: { user: tokenUser }) {
     } else if (currentStep === 2) {
       // Educational Background validation
       const result = EducationSchema.safeParse(Educationform.getValues());
-      console.log("Educational Background result:", Educationform.getValues());
       if (!result.success) {
         result.error.errors.forEach((error) => {
           const field = error
@@ -223,7 +147,6 @@ export default function MentorOnboarding({ user }: { user: tokenUser }) {
     } else if (currentStep === 4) {
       // Educational Background validation
       const result = PreferencesSchema.safeParse(Preferenceform.getValues());
-      console.log("Educational Background result:", Preferenceform.getValues());
       if (!result.success) {
         result.error.errors.forEach((error) => {
           const field = error
@@ -317,8 +240,8 @@ export default function MentorOnboarding({ user }: { user: tokenUser }) {
                     isCompleted
                       ? "bg-green-500 text-white"
                       : isActive
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200 text-gray-400"
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200 text-gray-400"
                   }`}
                 >
                   {isCompleted ? (
@@ -386,13 +309,6 @@ export default function MentorOnboarding({ user }: { user: tokenUser }) {
           </CardContent>
         </Card>
       </div>
-      <Toaster
-        open={onboadedComplete}
-        href="/dashboad"
-        title="Onboarding Complete"
-        description="Your onboarding process is now complete."
-        icon={<Check className="w-4 h-4" />}
-      />
     </>
   );
 }

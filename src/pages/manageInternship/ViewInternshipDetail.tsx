@@ -1,4 +1,6 @@
+import { UPLOAD_PHOTOS_URL } from "@/components/config/CommonBaseUrl";
 import { RootState } from "@/components/store/store";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
@@ -8,6 +10,8 @@ import {
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Internship } from "@/index";
+import { cn } from "@/lib/utils";
+import { getAllDomainIntern } from "@/utils/internship";
 import { format } from "date-fns";
 import {
   Calendar,
@@ -17,7 +21,10 @@ import {
   Tag,
   GraduationCap,
   User,
+  UserCheck,
+  Sparkles,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { FaRupeeSign } from "react-icons/fa";
 import { useSelector } from "react-redux";
 
@@ -25,6 +32,42 @@ interface InternshipDetailsModalProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   internship: Internship;
+}
+
+const getDifficultyColor = (level: string) => {
+  switch (level.toLowerCase()) {
+    case "beginner":
+      return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30";
+    case "intermediate":
+      return "bg-amber-500/15 text-amber-400 border-amber-500/30";
+    case "advanced":
+      return "bg-red-500/15 text-red-400 border-red-500/30";
+    default:
+      return "bg-muted text-muted-foreground";
+  }
+};
+
+const getStatusColor = (status: string) => {
+  switch (status.toLowerCase()) {
+    case "published":
+      return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30";
+    case "draft":
+      return "bg-muted text-muted-foreground border-border";
+    case "archived":
+      return "bg-red-500/15 text-red-400 border-red-500/30";
+    default:
+      return "bg-muted text-muted-foreground";
+  }
+};
+
+export interface InternsProfile {
+  id: string;
+  full_name: string;
+  email: string;
+  avatar: string;
+  domain_name: "tech" | "management";
+  created_at: string; // ISO date string
+  joined_at: string; // ISO date string
 }
 
 export function ViewInternshipDetail({
@@ -41,32 +84,30 @@ export function ViewInternshipDetail({
 
   const user = useSelector((state: RootState) => state.auth.user);
 
-  const getDifficultyColor = (level: string) => {
-    switch (level.toLowerCase()) {
-      case "beginner":
-        return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30";
-      case "intermediate":
-        return "bg-amber-500/15 text-amber-400 border-amber-500/30";
-      case "advanced":
-        return "bg-red-500/15 text-red-400 border-red-500/30";
-      default:
-        return "bg-muted text-muted-foreground";
-    }
-  };
+  const [activeInternTab, setActiveInternTab] = useState("all");
+  const [joinedInterns, setJoinedInterns] = useState<InternsProfile[]>([]);
 
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "published":
-        return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30";
-      case "draft":
-        return "bg-muted text-muted-foreground border-border";
-      case "archived":
-        return "bg-red-500/15 text-red-400 border-red-500/30";
-      default:
-        return "bg-muted text-muted-foreground";
-    }
-  };
+  useEffect(() => {
+    const fetchInternshipInterns = async () => {
+      const res = await getAllDomainIntern(internship.id);
+      setJoinedInterns(res);
+    };
+    fetchInternshipInterns();
+  }, [internship.id, internship.host_domain]);
 
+  const filteredInterns =
+    activeInternTab === "all"
+      ? joinedInterns
+      : joinedInterns.filter(
+          (intern) => intern.domain_name === activeInternTab,
+        );
+
+  const techInternsCount = joinedInterns.filter(
+    (i) => i.domain_name === "tech",
+  ).length;
+  const mgmtInternsCount = joinedInterns.filter(
+    (i) => i.domain_name === "management",
+  ).length;
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-3xl max-h-[80vh] overflow-hidden flex flex-col px-0 pb-0">
@@ -82,7 +123,7 @@ export function ViewInternshipDetail({
             </div>
             <Badge
               variant="outline"
-              className={getStatusColor(internship.status)}
+              className={cn(' capitalize',getStatusColor(internship.status))}
             >
               {internship.status}
             </Badge>
@@ -108,9 +149,7 @@ export function ViewInternshipDetail({
         <div className="flex-1 overflow-y-auto px-6 py-3 space-y-6">
           {/* Host & Co-host Section */}
           <div className="space-y-3">
-            <h3 className="font-bold">
-              TEAM
-            </h3>
+            <h3 className="font-bold">TEAM</h3>
             <div className="grid grid-cols-2 gap-3">
               {/* Host */}
               {internship.host.map((h) => (
@@ -121,7 +160,7 @@ export function ViewInternshipDetail({
                   <div className="h-10 w-10 rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 flex items-center justify-center text-white font-medium shrink-0">
                     {h.avatar ? (
                       <img
-                        src={h.avatar || "/user.png"}
+                        src={UPLOAD_PHOTOS_URL + h.avatar || "/user.png"}
                         alt={h.full_name}
                         className="h-10 w-10 rounded-full object-cover"
                       />
@@ -154,7 +193,7 @@ export function ViewInternshipDetail({
                   <div className="h-10 w-10 rounded-full bg-gradient-to-br from-violet-400 to-fuchsia-500 flex items-center justify-center text-white font-medium shrink-0">
                     {c.avatar ? (
                       <img
-                        src={c.avatar || "/user.png"}
+                        src={UPLOAD_PHOTOS_URL + c.avatar || "/user.png"}
                         alt={c.full_name}
                         className="h-10 w-10 rounded-full object-cover"
                       />
@@ -179,6 +218,120 @@ export function ViewInternshipDetail({
               ))}
             </div>
           </div>
+
+          {joinedInterns.length > 0 && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-muted-foreground text-sm uppercase tracking-wide flex items-center gap-2">
+                  <UserCheck className="h-4 w-4 text-emerald-400" />
+                  Joined Interns
+                  <Badge
+                    variant="secondary"
+                    className="ml-1 bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+                  >
+                    {joinedInterns.length}
+                  </Badge>
+                </h3>
+              </div>
+
+              {/* Intern Filter Tabs */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setActiveInternTab("all")}
+                  className={`px-3 py-1.5 text-xs font-medium rounded-full transition-all border ${
+                    activeInternTab === "all"
+                      && "bg-primary/40"
+            
+                  }`}
+                >
+                  All ({joinedInterns.length})
+                </button>
+                <button
+                  onClick={() => setActiveInternTab("tech")}
+                  className={`px-3 py-1.5 text-xs font-medium rounded-full transition-all border ${
+                    activeInternTab === "tech"
+                      && "bg-primary/40"
+                  }`}
+                >
+                  Tech ({techInternsCount})
+                </button>
+                <button
+                  onClick={() => setActiveInternTab("management")}
+                  className={`px-3 py-1.5 text-xs font-medium rounded-full transition-all border ${
+                    activeInternTab === "management"
+                      && "bg-primary/40"
+      
+                  }`}
+                >
+                  Management ({mgmtInternsCount})
+                </button>
+              </div>
+
+              {/* Interns Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[200px] overflow-y-auto pr-1">
+                {filteredInterns.map((intern, index) => (
+                  <div
+                    key={intern.id}
+                    className="group flex items-center gap-3 p-3 rounded-xl border transition-all"
+                    style={{ animationDelay: `${index * 50}ms` }}
+                  >
+                    <div className="relative">
+                      <Avatar
+                        className={`h-9 w-9 ring-2 ${
+                          intern.domain_name === "tech"
+                            ? "ring-cyan-500/40"
+                            : "ring-violet-500/40"
+                        }`}
+                      >
+                        <AvatarImage
+                          src={UPLOAD_PHOTOS_URL + intern.avatar || "/placeholder.svg"}
+                          alt={intern.full_name}
+                        />
+                        <AvatarFallback
+                          className={`text-white font-medium text-sm ${
+                            intern.domain_name === "tech"
+                              ? "bg-gradient-to-br from-cyan-400 to-blue-500"
+                              : "bg-gradient-to-br from-violet-400 to-purple-500"
+                          }`}
+                        >
+                          {intern.full_name
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")}
+                        </AvatarFallback>
+                      </Avatar>
+                     
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium truncate">
+                        {intern.full_name}
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <Badge
+                          variant="outline"
+                          className={`text-[10px] px-1.5 py-0 capitalize ${
+                            intern.domain_name === "tech"
+                              ? "bg-cyan-500/10 text-cyan-400 border-cyan-500/30"
+                              : "bg-violet-500/10 text-violet-400 border-violet-500/30"
+                          }`}
+                        >
+                          {intern.domain_name}
+                        </Badge>
+                       
+                      </div>
+                    </div>
+                    <Sparkles className="h-3.5 w-3.5 text-zinc-600 group-hover:text-amber-400 transition-colors" />
+                  </div>
+                ))}
+              </div>
+
+              {filteredInterns.length === 0 && (
+                <div className="py-8 text-center text-zinc-500 text-sm">
+                  No interns in this category yet
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Domain Tabs */}
           <Tabs defaultValue={domainKeys[0]} className="w-full">
@@ -230,7 +383,7 @@ export function ViewInternshipDetail({
                       <Badge
                         variant="outline"
                         className={`mt-1 ${getDifficultyColor(
-                          domain.difficulty_level
+                          domain.difficulty_level,
                         )}`}
                       >
                         {domain.difficulty_level}

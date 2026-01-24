@@ -1,6 +1,5 @@
 import axios from "axios";
-import { BASE_URL } from "../components/config/CommonBaseUrl";
-import type { User } from "@/components/features/auth/authTypes";
+import { BASE_URL, WS_URL } from "../components/config/CommonBaseUrl";
 
 interface userDataProps {
   email: string;
@@ -52,6 +51,11 @@ interface UpdateLiveStatusProps {
 
 export const api = axios.create({
   baseURL: BASE_URL,
+  withCredentials: true,
+});
+
+export const wsApi = axios.create({
+  baseURL: WS_URL,
   withCredentials: true,
 });
 

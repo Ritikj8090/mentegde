@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { CalendarIcon, User } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -13,24 +13,28 @@ import { z } from "zod";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { UseFormReturn } from "react-hook-form";
-import { PersonalSchema } from "./schema";
-import {
-  NativeSelect,
-  NativeSelectOption,
-} from "@/components/ui/native-select";
+import { PersonalSchema } from "../../pages/onboarding/schema";
 import { Textarea } from "../ui/textarea";
 import { ProfilePictureEditButton } from "../settings/components/SettingComponents";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { useState } from "react";
 import { UPLOAD_PHOTOS_URL } from "../config/CommonBaseUrl";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 type PersonalInfoProps = {
   Personalform: UseFormReturn<z.infer<typeof PersonalSchema>>;
@@ -38,8 +42,6 @@ type PersonalInfoProps = {
 
 const PersonalInfo = ({ Personalform }: PersonalInfoProps) => {
   const [open, setOpen] = useState(false);
-
-  console.log(UPLOAD_PHOTOS_URL + Personalform.getValues("avatar"));
   return (
     <>
       <Form {...Personalform}>
@@ -101,13 +103,26 @@ const PersonalInfo = ({ Personalform }: PersonalInfoProps) => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Phone number</FormLabel>
+
                   <FormControl>
-                    <Input placeholder="+91 987654321" {...field} />
+                    <Input
+                      {...field}
+                      placeholder="9876543210"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      maxLength={10}
+                      onChange={(e) => {
+                        const onlyNumbers = e.target.value.replace(/\D/g, "");
+                        field.onChange(onlyNumbers);
+                      }}
+                    />
                   </FormControl>
+
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <FormField
               control={Personalform.control}
               name="email"
@@ -127,67 +142,77 @@ const PersonalInfo = ({ Personalform }: PersonalInfoProps) => {
             <FormField
               control={Personalform.control}
               name="date_of_birth"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Date of birth</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "w-[240px] pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value ? (
-                            format(field.value, "PPP")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) =>
-                          date > new Date() || date < new Date("1900-01-01")
-                        }
-                        captionLayout="dropdown"
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormDescription>
-                    Your date of birth is used to calculate your age.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
+              render={({ field }) => {
+                const [open, setOpen] = useState(false);
+
+                return (
+                  <FormItem className="flex flex-col w-full">
+                    <FormLabel>Date of birth</FormLabel>
+
+                    <Popover open={open} onOpenChange={setOpen}>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground",
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "PPP")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={(date) => {
+                            field.onChange(date);
+                            setOpen(false);
+                          }}
+                          disabled={(date) =>
+                            date > new Date() || date < new Date("1900-01-01")
+                          }
+                          captionLayout="dropdown"
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
             />
+
             <FormField
               control={Personalform.control}
               name="gender"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Gender</FormLabel>
+
                   <FormControl>
-                    <NativeSelect value={field.value} onChange={field.onChange}>
-                      <NativeSelectOption value="">
-                        Select gender
-                      </NativeSelectOption>
-                      <NativeSelectOption value="male">Male</NativeSelectOption>
-                      <NativeSelectOption value="female">
-                        Female
-                      </NativeSelectOption>
-                      <NativeSelectOption value="others">
-                        Others
-                      </NativeSelectOption>
-                    </NativeSelect>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select gender" />
+                      </SelectTrigger>
+
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectItem value="male">Male</SelectItem>
+                          <SelectItem value="female">Female</SelectItem>
+                          <SelectItem value="others">Others</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
                   </FormControl>
+
                   <FormMessage />
                 </FormItem>
               )}
@@ -198,25 +223,28 @@ const PersonalInfo = ({ Personalform }: PersonalInfoProps) => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Status</FormLabel>
+
                   <FormControl>
-                    <NativeSelect value={field.value} onChange={field.onChange}>
-                      <NativeSelectOption value="">
-                        Select status
-                      </NativeSelectOption>
-                      <NativeSelectOption value="fresher">
-                        Fresher
-                      </NativeSelectOption>
-                      <NativeSelectOption value="employed">
-                        Employed
-                      </NativeSelectOption>
-                      <NativeSelectOption value="self-employed">
-                        Self-employed
-                      </NativeSelectOption>
-                      <NativeSelectOption value="other">
-                        Other
-                      </NativeSelectOption>
-                    </NativeSelect>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select your current status" />
+                      </SelectTrigger>
+
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Current Status</SelectLabel>
+
+                          <SelectItem value="fresher">Fresher</SelectItem>
+                          <SelectItem value="employed">Employed</SelectItem>
+                          <SelectItem value="self-employed">
+                            Self-employed
+                          </SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
                   </FormControl>
+
                   <FormMessage />
                 </FormItem>
               )}
@@ -228,26 +256,26 @@ const PersonalInfo = ({ Personalform }: PersonalInfoProps) => {
                 <FormItem>
                   <FormLabel>Heard about us</FormLabel>
                   <FormControl>
-                    <NativeSelect value={field.value} onChange={field.onChange}>
-                      <NativeSelectOption value="">
-                        Select status
-                      </NativeSelectOption>
-                      <NativeSelectOption value="google">
-                        Google
-                      </NativeSelectOption>
-                      <NativeSelectOption value="facebook">
-                        Facebook
-                      </NativeSelectOption>
-                      <NativeSelectOption value="linkedin">
-                        Linkedin
-                      </NativeSelectOption>
-                      <NativeSelectOption value="other">
-                        Other
-                      </NativeSelectOption>
-                      <NativeSelectOption value="friends">
-                        Friends
-                      </NativeSelectOption>
-                    </NativeSelect>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select why you heard about us" />
+                      </SelectTrigger>
+
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Current Status</SelectLabel>
+
+                          <SelectItem value="google">Google</SelectItem>
+                          <SelectItem value="linkedin">Linkedin</SelectItem>
+                          <SelectItem value="facebook">Facebook</SelectItem>
+                          <SelectItem value="instagram">Instagram</SelectItem>
+                          <SelectItem value="twitter">Twitter</SelectItem>
+                          <SelectItem value="friends">Friends</SelectItem>
+                          <SelectItem value="colleges">Colleges</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

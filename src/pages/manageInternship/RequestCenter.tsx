@@ -13,13 +13,15 @@ import { Button } from "@/components/ui/button";
 import { Internship } from "@/index";
 import { format } from "date-fns";
 import AcceptRequestCohost from "./AcceptRequestCohost";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RejectRequest } from "./RejectRequest";
 
 const RequestCenter = ({
   internshipsRequests,
+  setInternshipsRequests
 }: {
   internshipsRequests: Internship[];
+  setInternshipsRequests: React.Dispatch<React.SetStateAction<Internship[]>>;
 }) => {
   return (
     <>
@@ -37,6 +39,7 @@ const RequestCenter = ({
                 <RenderCard
                   key={internshipsRequest.id}
                   internshipsRequest={internshipsRequest}
+                  setInternshipData={setInternshipsRequests}
                 />
               ))}
           </CardContent>
@@ -54,8 +57,10 @@ export default RequestCenter;
 
 const RenderCard = ({
   internshipsRequest,
+  setInternshipData
 }: {
   internshipsRequest: Internship;
+  setInternshipData: React.Dispatch<React.SetStateAction<Internship[]>>;
 }) => {
   const [isAcceptOpen, setIsAcceptOpen] = useState(false);
   const [isRejectOpen, setIsRejectOpen] = useState(false);
@@ -82,8 +87,8 @@ const RenderCard = ({
                   internshipsRequest.my_role.invite_status === "pending"
                     ? " border-yellow-600/50  text-white bg-yellow-600/50"
                     : internshipsRequest.my_role.invite_status === "accepted"
-                    ? "flex-1 border-green-600/50 text-white bg-green-600/50"
-                    : "flex-1 border-red-600/50 text-white bg-red-600/50"
+                      ? "flex-1 border-green-600/50 text-white bg-green-600/50"
+                      : "flex-1 border-red-600/50 text-white bg-red-600/50",
                 )}
               >
                 {internshipsRequest.my_role.invite_status}
@@ -133,16 +138,23 @@ const RenderCard = ({
           </div>
         </CardContent>
       </Card>
-      <AcceptRequestCohost
-        setOpen={setIsAcceptOpen}
-        open={isAcceptOpen}
-        internshipsRequest={internshipsRequest}
-      />
-      <RejectRequest
-        setOpen={setIsRejectOpen}
-        open={isRejectOpen}
-        internshipId={internshipsRequest.id}
-      />
+      {isAcceptOpen && (
+        <AcceptRequestCohost
+          setOpen={setIsAcceptOpen}
+          open={isAcceptOpen}
+          internshipsRequestId={internshipsRequest.id}
+          internshipsRequestMyRoleDomain={internshipsRequest.my_role.domain}
+          setInternshipData={setInternshipData}
+        />
+      )}
+      {isRejectOpen && (
+        <RejectRequest
+          setOpen={setIsRejectOpen}
+          open={isRejectOpen}
+          internshipId={internshipsRequest.id}
+          setInternshipData={setInternshipData}
+        />
+      )}
     </>
   );
 };
