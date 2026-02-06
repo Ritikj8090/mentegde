@@ -216,6 +216,15 @@ export const getOngoingInternshipsForIntern = async () => {
   return result.data;
 };
 
+export const getOngoingInternshipsForInternById = async (
+  internshipId: string,
+) => {
+  const result = await api.get(
+    `/internships/intern/ongoing-with-progress?internshipId=${internshipId}`,
+  );
+  return result.data;
+};
+
 export const updateConcept = async (
   conceptId: string,
   data: z.infer<typeof conceptsSchema>,
@@ -286,9 +295,61 @@ export const uploadAssignmentFiles = async (
   return result.data;
 };
 
+export const getAssignment = async (assignmentId: string) => {
+  const result = await api.post(
+    `/internships/intern/assignments/${assignmentId}/submit`,
+  );
+  return result.data;
+};
+
 export const getAssignmentFiles = async (assignmentId: string) => {
   const result = await api.get(
     `/internships/assignments/${assignmentId}/files`,
   );
+  return result.data;
+};
+
+export const getCertificateDetail = async (certificateNumber: string) => {
+  const result = await api.get(
+    `/internships/certificates/${certificateNumber}`,
+  );
+  return result.data;
+};
+
+export const editMilestone = async (
+  milestoneId: string,
+  data: z.infer<typeof milestonesSchema>,
+) => {
+  const result = await api.put(`/internships/milestones/${milestoneId}`, data);
+  return result.data;
+};
+
+export const submitTaskQuizAnswers = async (
+  taskId: string,
+  answers: { [questionId: string]: number }[],
+) => {
+  const result = await api.post(`/internships/intern/tasks/${taskId}/submit`, {
+    answers,
+  });
+  return result.data;
+};
+
+export const submitTaskCodingSolution = async (
+  taskId: string,
+  code_answer: string,
+) => {
+  const result = await api.post(`/internships/intern/tasks/${taskId}/submit`, {
+    code_answer,
+  });
+  return result.data;
+};
+
+export const submitTaskTextSolution = async (
+  taskId: string,
+  text_answer: string,
+) => {
+  const result = await api.post(`/internships/intern/tasks/${taskId}/submit`, {
+    text_answer,
+  });
   return result.data;
 };

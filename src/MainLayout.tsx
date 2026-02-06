@@ -11,6 +11,8 @@ import Loading from "@/components/Loading";
 import { useSelector } from "react-redux";
 import { RootState } from "@/components/store/store";
 import { CustomToastProvider } from "./components/Toaster";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { GOOGLE_CLIENT_ID } from "./components/config/CommonBaseUrl";
 
 const MainLayout = () => {
   const [menuToggle, setMenuToggle] = useState(false);
@@ -22,9 +24,11 @@ const MainLayout = () => {
     console.log("MainLayout: Loading authentication state..."); // Debug log
     return <Loading />;
   }
-
+console.log(GOOGLE_CLIENT_ID)
   return (
     <ThemeProvider>
+      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+
       <CustomToastProvider>
         <SidebarProvider defaultOpen={false} open={menuToggle}>
           <Navbar setMenuToggle={setMenuToggle} menuToggle={menuToggle} />
@@ -35,6 +39,7 @@ const MainLayout = () => {
           </main>
         </SidebarProvider>
       </CustomToastProvider>
+      </GoogleOAuthProvider>
     </ThemeProvider>
   );
 };

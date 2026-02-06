@@ -249,7 +249,7 @@ export function EditInternship({
                                       <Avatar>
                                         <AvatarImage
                                           src={
-                                            UPLOAD_PHOTOS_URL + mentor.avatar
+                                            mentor.avatar
                                           }
                                         />
                                         <AvatarFallback>CN</AvatarFallback>
@@ -279,7 +279,7 @@ export function EditInternship({
                     <CardContent className="flex items-center gap-2">
                       <Avatar>
                         <AvatarImage
-                          src={UPLOAD_PHOTOS_URL + selectedCoHost.avatar}
+                          src={selectedCoHost.avatar}
                         />
                         <AvatarFallback>CN</AvatarFallback>
                       </Avatar>

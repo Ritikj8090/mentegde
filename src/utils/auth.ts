@@ -1,5 +1,5 @@
 import { api } from "@/services/api";
-import { UserProfile } from "..";
+import { tokenUser, UserProfile } from "..";
 
 export const userSignup = async (
   full_name: string,
@@ -46,4 +46,11 @@ export const getCurrentUser = async () => {
 export const getWebsocketToken = async () => {
   const response = await api.get("/auth/refresh-ws-token");
   return response.data.websocketToken;
+};
+
+export const findMentorAndUser = async (searchTerm: string) => {
+  const response = await api.post("/auth/find-any", {
+    text: searchTerm,
+  });
+  return response.data.users as tokenUser[];
 };

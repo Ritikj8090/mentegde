@@ -33,8 +33,9 @@ import { oboardingUser } from "@/utils/auth";
 import Preference from "@/components/onboarding/Preference";
 import { Toaster } from "@/components/Toaster";
 import { steps } from ".";
+import { User } from "@/components/features/auth/authTypes";
 
-export default function StudentOnboarding() {
+export default function StudentOnboarding({ user }: { user: User }) {
   const { addToast } = Toaster();
   const [currentStep, setCurrentStep] = useState(1);
 
@@ -46,7 +47,12 @@ export default function StudentOnboarding() {
 
   const Personalform = useForm<z.infer<typeof PersonalSchema>>({
     resolver: zodResolver(PersonalSchema),
-    defaultValues: PersonalSchemaDefaultValue,
+    defaultValues: {
+      ...PersonalSchemaDefaultValue,
+      email: user.email || "",
+      full_name: user.full_name || "",
+      avatar: user.avatar || "",
+    },
     mode: "onChange",
   });
 

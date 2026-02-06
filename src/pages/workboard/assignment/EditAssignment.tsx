@@ -309,7 +309,7 @@ export function EditAssignments({
 
                         {/* Avatar */}
                         <img
-                          src={UPLOAD_PHOTOS_URL + user.avatar || "/user.png"}
+                          src={user.avatar || "/user.png"}
                           alt={user.full_name}
                           className="h-10 w-10 rounded-full object-cover shrink-0"
                         />

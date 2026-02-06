@@ -217,7 +217,7 @@ export function CreateInternship({
                                   <div className="flex items-center gap-2">
                                     <Avatar>
                                       <AvatarImage
-                                        src={UPLOAD_PHOTOS_URL + mentor.avatar}
+                                        src={mentor.avatar}
                                       />
                                       <AvatarFallback>CN</AvatarFallback>
                                     </Avatar>
@@ -246,7 +246,7 @@ export function CreateInternship({
                     <CardContent className="flex items-center gap-2">
                       <Avatar>
                         <AvatarImage
-                          src={UPLOAD_PHOTOS_URL + selectedCoHost.avatar}
+                          src={selectedCoHost.avatar}
                         />
                         <AvatarFallback>CN</AvatarFallback>
                       </Avatar>

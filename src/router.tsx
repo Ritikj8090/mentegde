@@ -30,6 +30,7 @@ import InternshipPage from "./pages/manageInternship/InternshipPage";
 import { PaymentPage } from "./pages/payment/PaymentPage";
 import ChatChannelPage from "./pages/chatChannel/ChatChannelPage";
 import ChatPage from "./pages/chats/Chatpage";
+import Certificatepage from "./pages/certificate/Certificatepage";
 
 const router = createBrowserRouter([
   {
@@ -76,6 +77,7 @@ const router = createBrowserRouter([
         ],
       },
 
+      { path: "certificate/:certificateNumber", element: <Certificatepage /> },
       { path: "access-denied", element: <AccessDenied /> },
     ],
   },

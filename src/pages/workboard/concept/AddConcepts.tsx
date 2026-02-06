@@ -33,6 +33,7 @@ interface AddConceptsProps {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   milestoneId: string;
   setConceptsData: React.Dispatch<React.SetStateAction<Concept[]>>;
+  conceptDataLength: number;
 }
 
 export function AddConcepts({
@@ -40,32 +41,32 @@ export function AddConcepts({
   setOpen,
   milestoneId,
   setConceptsData,
+  conceptDataLength,
 }: AddConceptsProps) {
   const form = useForm<z.infer<typeof conceptsSchema>>({
     resolver: zodResolver(conceptsSchema),
-    defaultValues: conceptsDefaultValues,
+    defaultValues: { ...conceptsDefaultValues, order_index: conceptDataLength },
   });
   const onSubmit = async (values: z.infer<typeof conceptsSchema>) => {
     const res = await createConcepts(milestoneId, values);
-
     if (!res?.concept) return;
 
-    const normalizedConcept = {
-      ...res.concept,
+    setConceptsData((prev) => {
+      const newOrder = Number(res.concept.order_index);
 
-      // ✅ add progress (UI expects this)
-      progress: {
-        status: "not_started",
-        completed_at: null,
-        updated_at: null,
-      },
+      // ✅ Shift existing concepts
+      const updated = prev.map((c) =>
+        Number(c.order_index) >= newOrder
+          ? { ...c, order_index: Number(c.order_index) + 1 }
+          : c,
+      );
 
-      // ✅ keep dates consistent (use backend value or convert)
-      created_at: res.concept.created_at,
-      updated_at: res.concept.updated_at,
-    };
+      // ✅ Add new concept & sort
+      return [...updated, res.concept].sort(
+        (a, b) => Number(a.order_index) - Number(b.order_index),
+      );
+    });
 
-    setConceptsData((prev) => [...prev, normalizedConcept]);
     setOpen(false);
   };
 

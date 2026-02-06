@@ -19,7 +19,7 @@ export default function Onboarding() {
 
   return (
     <div className="min-h-screen w-full">
-      {user?.role === "mentor" ? <MentorOnboarding /> : <StudentOnboarding />}
+      {user?.role === "mentor" ? <MentorOnboarding user={user} /> : <StudentOnboarding user={user} />}
     </div>
   );
 }

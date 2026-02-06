@@ -160,7 +160,7 @@ export function ViewInternshipDetail({
                   <div className="h-10 w-10 rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 flex items-center justify-center text-white font-medium shrink-0">
                     {h.avatar ? (
                       <img
-                        src={UPLOAD_PHOTOS_URL + h.avatar || "/user.png"}
+                        src={h.avatar || "/user.png"}
                         alt={h.full_name}
                         className="h-10 w-10 rounded-full object-cover"
                       />
@@ -193,7 +193,7 @@ export function ViewInternshipDetail({
                   <div className="h-10 w-10 rounded-full bg-gradient-to-br from-violet-400 to-fuchsia-500 flex items-center justify-center text-white font-medium shrink-0">
                     {c.avatar ? (
                       <img
-                        src={UPLOAD_PHOTOS_URL + c.avatar || "/user.png"}
+                        src={c.avatar || "/user.png"}
                         alt={c.full_name}
                         className="h-10 w-10 rounded-full object-cover"
                       />
@@ -284,7 +284,7 @@ export function ViewInternshipDetail({
                         }`}
                       >
                         <AvatarImage
-                          src={UPLOAD_PHOTOS_URL + intern.avatar || "/placeholder.svg"}
+                          src={intern.avatar || "/placeholder.svg"}
                           alt={intern.full_name}
                         />
                         <AvatarFallback

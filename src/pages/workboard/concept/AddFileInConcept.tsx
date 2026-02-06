@@ -8,6 +8,8 @@ import {
 import { Concept, ConceptFile } from "@/index";
 import { FileUploadForm } from "@/components/UploadFile";
 import { uploadConceptFiles } from "@/utils/internship";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface EditConceptProps {
   open: boolean;
@@ -22,15 +24,18 @@ export function AddFileInConcept({
   conceptsData,
   setFiles,
 }: EditConceptProps) {
+    const [fileUploading, setFileUploading] = useState(false);
   const handleFileUpload = async (files: File[]) => {
+    setFileUploading(true);
     const res = await uploadConceptFiles(conceptsData.id, files);
     setFiles((prev) => [...prev, ...res.files]);
     setOpen(false);
+    setFileUploading(false);
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="min-w-150">
+      <DialogContent className={cn("min-w-150", fileUploading && "opacity-50 pointer-events-none")}>
         <DialogHeader>
           <DialogTitle>Edit Concept</DialogTitle>
           <DialogDescription>
@@ -41,6 +46,7 @@ export function AddFileInConcept({
           onUpload={(files: File[]) => {
             handleFileUpload(files);
           }}
+          uploading={fileUploading}
         />
       </DialogContent>
     </Dialog>

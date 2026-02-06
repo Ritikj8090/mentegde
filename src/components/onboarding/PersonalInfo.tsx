@@ -51,7 +51,7 @@ const PersonalInfo = ({ Personalform }: PersonalInfoProps) => {
               <TooltipTrigger asChild onClick={() => setOpen(true)}>
                 <Avatar className="mb-6 h-32 w-32 border-4 border-primary/20 ring-2 ring-primary/10 cursor-pointer">
                   <AvatarImage
-                    src={UPLOAD_PHOTOS_URL + Personalform.getValues("avatar")}
+                    src={Personalform.getValues("avatar")}
                     alt={Personalform.getValues("full_name")}
                   />
                   <AvatarFallback className="bg-primary/10 text-3xl font-semibold text-primary">

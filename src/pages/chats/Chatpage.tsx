@@ -1,14 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import {
-  sendMessage,
-} from "@/utils/internshipChannel";
-import {
-  ChatMessage,
-  ChatUser,
-  Conversation,
-} from "@/index";
+import { sendMessage } from "@/utils/chat";
+import { ChatMessage, ChatUser, Conversation } from "@/index";
 import { WS_URL } from "@/components/config/CommonBaseUrl";
 import { getWebsocketToken } from "@/utils/auth";
 import { useSelector } from "react-redux";
@@ -234,10 +228,10 @@ const ChatPage = () => {
       <div className="max-h-[calc(100vh-64px)] flex container mx-auto">
         {/* Channels Sidebar */}
         <div className="w-72 flex flex-col">
-
           {/* Channels */}
           <ChannelPage
             conversations={conversations}
+            setConversations={setConversations}
             activeConversation={activeConversation}
             setActiveConversation={setActiveConversation}
           />
@@ -266,17 +260,19 @@ const ChatPage = () => {
           ) : (
             <div className="flex-1 flex items-center justify-center">
               <p className="text-muted-foreground">
-                Select a channel to start chatting
+                Select a message chat to start chatting
               </p>
             </div>
           )}
-          <ChannelInput
-            activeConversation={activeConversation}
-            newMessage={newMessage}
-            setNewMessage={setNewMessage}
-            inputRef={inputRef}
-            handleSendMessage={handleSend}
-          />
+          {activeConversation && (
+            <ChannelInput
+              activeConversation={activeConversation}
+              newMessage={newMessage}
+              setNewMessage={setNewMessage}
+              inputRef={inputRef}
+              handleSendMessage={handleSend}
+            />
+          )}
         </div>
       </div>
     </TooltipProvider>

@@ -39,6 +39,13 @@ import {
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { UPLOAD_PHOTOS_URL } from "@/components/config/CommonBaseUrl";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface AddConceptsProps {
   open: boolean;
@@ -58,11 +65,12 @@ export function AddAssignments({
   setAssignmentsData,
 }: AddConceptsProps) {
   const [allInterns, setAllInterns] = React.useState<Interns[] | null>(null);
+  const [openDate, setOpenDate] = React.useState(false);
 
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const interns = await getAllDomainIntern(internshipId, domain_name);
+        const interns = await getAllDomainIntern(internshipId);
         setAllInterns(interns);
         console.log(interns);
       } catch (error) {
@@ -90,7 +98,7 @@ export function AddAssignments({
       "assigned_to_ids",
       form.getValues("assigned_to_ids").includes(userId)
         ? form.getValues("assigned_to_ids").filter((id) => id !== userId)
-        : [...form.getValues("assigned_to_ids"), userId]
+        : [...form.getValues("assigned_to_ids"), userId],
     );
   };
 
@@ -131,7 +139,7 @@ export function AddAssignments({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="min-w-150">
+      <DialogContent className="min-w-150 overflow-y-scroll max-h-[90vh]">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <DialogHeader>
@@ -177,32 +185,35 @@ export function AddAssignments({
                   control={form.control}
                   name="due_date"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col">
+                    <FormItem className="flex flex-col w-full">
                       <FormLabel>Due Date</FormLabel>
-                      <Popover>
+
+                      <Popover open={openDate} onOpenChange={setOpenDate}>
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button
-                              variant={"outline"}
+                              variant="outline"
                               className={cn(
-                                "w-[240px] pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
+                                "w-full pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground",
                               )}
                             >
-                              {field.value ? (
-                                format(field.value, "PPP")
-                              ) : (
-                                <span>Pick a date</span>
-                              )}
+                              {field.value
+                                ? format(field.value, "PPP")
+                                : "Pick a date"}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
                           </FormControl>
                         </PopoverTrigger>
+
                         <PopoverContent className="w-auto p-0" align="start">
                           <Calendar
                             mode="single"
                             selected={field.value}
-                            onSelect={field.onChange}
+                            onSelect={(date) => {
+                              field.onChange(date);
+                              setOpenDate(false); // ✅ CLOSE AFTER SELECT
+                            }}
                             disabled={(date) => date < new Date()}
                             captionLayout="dropdown"
                           />
@@ -215,30 +226,29 @@ export function AddAssignments({
                   control={form.control}
                   name="status"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col">
+                    <FormItem className="flex flex-col w-full">
                       <FormLabel>Assignment Status</FormLabel>
-                      <FormControl>
-                        <NativeSelect
-                          value={field.value}
-                          onChange={field.onChange}
-                        >
-                          <NativeSelectOption value="">
-                            Select a status
-                          </NativeSelectOption>
-                          <NativeSelectOption value="draft">
-                            Draft
-                          </NativeSelectOption>
-                          <NativeSelectOption value="published">
-                            Published
-                          </NativeSelectOption>
-                          <NativeSelectOption value="closed">
-                            Closed
-                          </NativeSelectOption>
-                        </NativeSelect>
-                      </FormControl>
+
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select a status" />
+                          </SelectTrigger>
+                        </FormControl>
+
+                        <SelectContent>
+                          <SelectItem value="draft">Draft</SelectItem>
+                          <SelectItem value="published">Published</SelectItem>
+                          <SelectItem value="closed">Closed</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </FormItem>
                   )}
                 />
+
                 <FormField
                   control={form.control}
                   name="max_score"
@@ -255,6 +265,34 @@ export function AddAssignments({
                           }
                         />
                       </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="submission_types"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col w-full">
+                      <FormLabel>Submission Type</FormLabel>
+
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select a status" />
+                          </SelectTrigger>
+                        </FormControl>
+
+                        <SelectContent>
+                          <SelectItem value="text">Text</SelectItem>
+                          <SelectItem value="file">File</SelectItem>
+                          <SelectItem value="link">Link</SelectItem>
+                        </SelectContent>
+                      </Select>
+
+                    
                     </FormItem>
                   )}
                 />
@@ -286,7 +324,7 @@ export function AddAssignments({
                           "relative flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all",
                           isSelected
                             ? "border-primary bg-primary/5 ring-1 ring-primary"
-                            : "border-border hover:border-muted-foreground/50 hover:bg-muted/50"
+                            : "border-border hover:border-muted-foreground/50 hover:bg-muted/50",
                         )}
                       >
                         {/* Selection indicator */}
@@ -298,7 +336,7 @@ export function AddAssignments({
 
                         {/* Avatar */}
                         <img
-                          src={UPLOAD_PHOTOS_URL + user.avatar || "/user.png"}
+                          src={user.avatar || "/user.png"}
                           alt={user.full_name}
                           className="h-10 w-10 rounded-full object-cover shrink-0"
                         />

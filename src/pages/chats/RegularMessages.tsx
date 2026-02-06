@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { ChatMessage, MessageListType } from "@/index";
 import { RootState } from "@/components/store/store";
 import { useSelector } from "react-redux";
+import { UPLOAD_PHOTOS_URL } from "@/components/config/CommonBaseUrl";
 
 interface RegularMessagesProps {
   messages: ChatMessage[];
@@ -100,7 +101,7 @@ const RegularMessages = ({ messages }: RegularMessagesProps) => {
                   </AvatarFallback>
                 </Avatar>
 
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0 mt-1">
                   <div
                     className={cn(
                       "flex items-center gap-2 mb-1",
@@ -118,7 +119,7 @@ const RegularMessages = ({ messages }: RegularMessagesProps) => {
                     <Badge
                       variant="outline"
                       className={cn(
-                        "text-[10px] px-1.5 h-4 capitalize",
+                        "text-[10px] capitalize",
                         message.sender_role === "mentor"
                           ? "border-cyan-500/30 text-cyan-400"
                           : message.sender_role === "user"

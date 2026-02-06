@@ -254,11 +254,11 @@ const UserSignUp = () => {
                 <div className="gap-4">
                   <Button
                     variant="outline"
-                    className="w-full justify-center cursor-pointer"
+                    className="w-full justify-center"
                     type="button"
-                    onClick={() => {
-                      window.location.href = `${BASE_URL}/google?state=role:mentor`;
-                    }}
+                    onClick={() =>
+                      (window.location.href = `${BASE_URL}/auth/google?role=user`)
+                    }
                   >
                     <Google />
                     <span className="ml-2">Sign up with Google</span>

@@ -52,7 +52,7 @@ const MentorProfilePage = () => {
       <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 group">
         <CardContent className=" flex items-center justify-center flex-col">
           <Avatar className="mb-6 h-32 w-32 border-4 border-primary/20 ring-2 ring-primary/10">
-            <AvatarImage src={UPLOAD_PHOTOS_URL + user.avatar} alt={user.full_name} />
+            <AvatarImage src={user.avatar} alt={user.full_name} />
             <AvatarFallback className="bg-primary/10 text-3xl font-semibold text-primary">
               {user.full_name
                 .split(" ")

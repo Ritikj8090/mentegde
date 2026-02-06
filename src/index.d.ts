@@ -99,8 +99,7 @@ export type OnlineStatus = {
   role: "user" | "mentor";
   domain: "tech" | "management" | "other";
   last_seen?: Date;
-
-}
+};
 
 export type Interns = {
   id: string;
@@ -223,6 +222,28 @@ export type Concept = {
   updated_at: string;
 };
 
+interface QuizAnswer {
+  question_id: string;
+  selected_option: number;
+}
+
+interface QuizSubmission {
+  id: string;
+  task_id: string;
+  intern_id: string;
+  task_type: "quiz";
+  text_answer: string | null;
+  selected_option: number | null;
+  answers: QuizAnswer[];
+  code_answer: string | null;
+  output: string | null;
+  score: number;
+  status: "submitted" | "draft" | "evaluated";
+  submitted_at: string; // ISO datetime
+  updated_at: string;   // ISO datetime
+}
+
+
 export type Task = {
   id: string;
   milestone_id: string;
@@ -230,11 +251,14 @@ export type Task = {
   title: string;
   description: string;
   status: "todo" | "in_progress" | "blocked" | "done";
+  score: number;
 
   assigned_to: string | null;
   assignees: string[];
 
   progress: Progress;
+  questions: Question[];
+  submission: QuizSubmission;
 
   created_by: string;
 
@@ -260,10 +284,36 @@ export type Assignment = {
   assignees: string[];
 
   progress: AssignmentProgress;
+  submission_types: SubmissionType
+
+  submission: AssignmentSubmission;
 
   created_at: string; // ISO timestamp
   updated_at: string; // ISO timestamp
 };
+
+export type SubmissionStatus = "draft" | "submitted" | "graded" | "rejected" | "late" | "returned" | "not_started";
+export type SubmissionType = "link" | "text" | "code" | "file";
+
+export interface AssignmentSubmission {
+  id: string;
+  assignment_id: string;
+  intern_id: string;
+
+  status: SubmissionStatus;
+  submission_type: SubmissionType;
+
+  text_content: string | null;
+  code_content: string | null;
+  link_url: string | null;
+
+  score: number | null;
+  feedback: string | null;
+
+  submitted_at: string; // ISO timestamp
+  graded_at: string | null;
+  updated_at: string; // ISO timestamp
+}
 
 export type AssignmentProgress = {
   id: string | null;
@@ -319,6 +369,9 @@ export type OngoingInternshipsForIntern = {
 
   concepts_total: string;
   concepts_completed: string;
+  completed_items: string;
+  completion_status: string;
+  certificate_number: string;
 
   tasks_total: string;
   tasks_assigned: string;
@@ -476,13 +529,13 @@ export type ChatFile = {
 export interface Coupon {
   id: string;
   code: string;
-  percent_off: number;      // e.g. 10 = 10% off
+  percent_off: number; // e.g. 10 = 10% off
   is_active: boolean;
   max_uses: number;
   used_count: number;
-  expires_at: string;       // ISO date string
-  created_at: string;       // ISO date string
-  updated_at: string;       // ISO date string
+  expires_at: string; // ISO date string
+  created_at: string; // ISO date string
+  updated_at: string; // ISO date string
 }
 
 export interface ChannelListType {
@@ -504,3 +557,58 @@ export interface MessageListType {
   created_at: string; // ISO date string
   files: ChatFile[];
 }
+
+export interface CertificateData {
+  internId: string;
+  internName: string;
+  internshipTitle: string;
+  domain_name: "tech" | "management" | string; // extend if needed
+  start_date: string; // ISO date string
+  end_date: string; // ISO date string
+  weekly_hours: number;
+  skills_required: string[];
+  certificateNumber: string;
+  mentor_full_name: string;
+}
+
+export type QuestionType = "quiz" | "coding" | "text";
+
+export interface BaseQuestion {
+  id: string;
+  task_id: string;
+  task_type: QuestionType;
+  question_text: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface QuizQuestion extends BaseQuestion {
+  task_type: "quiz";
+  options: string[];
+  starter_code: null;
+  test_cases: null;
+  expected_output: null;
+}
+
+export interface CodingTestCase {
+  input: any[];
+  output: any;
+}
+
+export interface CodingQuestion extends BaseQuestion {
+  task_type: "coding";
+  options: null;
+  starter_code: string;
+  test_cases: string[];
+  expected_output: string[];
+}
+
+export interface TextQuestion extends BaseQuestion {
+  task_type: "text";
+  question_text: string;
+  guidelines: string[];
+  word_limit_min: number;
+  word_limit_max: number;
+}
+
+export type Question = QuizQuestion | CodingQuestion | TextQuestion;

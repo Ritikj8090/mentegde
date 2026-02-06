@@ -1,5 +1,3 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 export const PersonalSchema = z.object({
@@ -71,27 +69,27 @@ export const PreferencesSchema = z.object({
 });
 
 export const PersonalSchemaDefaultValue: z.infer<typeof PersonalSchema> = {
-  full_name: "Aditya Tiwari",
-  email: "AyKqI@example.com",
-  gender: "male",
+  full_name: "",
+  email: "",
+  gender: "",
   date_of_birth: new Date(),
-  avatar: "https://unsplash.com/s/photos/profile",
-  phone_number: "1234567890",
-  bio: "I'm a software developer",
-  hear_about: "google",
-  current_status: "employed",
-  current_city: "Pune",
-  current_state: "Maharashtra",
+  avatar: "",
+  phone_number: "",
+  bio: "",
+  hear_about: "",
+  current_status: "",
+  current_city: "",
+  current_state: "",
 };
 
 export const EducationSchemaDefaultValue: z.infer<typeof EducationSchema> = {
   educations: [
     {
-      highest_degree: "Master's Degree",
-      institution: "IIT Bombay",
-      field_of_study: "Computer Science",
-      graduation_year: "2023",
-      gpa: "4.0",
+      highest_degree: "",
+      institution: "",
+      field_of_study: "",
+      graduation_year: "",
+      gpa: "",
     },
   ],
 };
@@ -99,31 +97,31 @@ export const EducationSchemaDefaultValue: z.infer<typeof EducationSchema> = {
 export const ExperienceSchemaDefaultValue: z.infer<typeof ExperienceSchema> = {
   experience: [
     {
-      location: "Pune",
-      company: "Google",
-      experience: "Entry Level (0-2 years)",
-      title: "Software Engineer",
-      industry: "Tech",
+      location: "",
+      company: "",
+      experience: "",
+      title: "",
+      industry: "",
     },
   ],
 };
 
 export const PreferencesSchemaDefaultValue: z.infer<typeof PreferencesSchema> =
   {
-    skills: ["React", "Node.js", "Python"],
-    languages: ["English", "Hindi"],
+    skills: [],
+    languages: [],
     certificates: [
       {
-        name: "Certificate 1",
-        provider: "Provider 1",
-        link: "https://example.com/certificate1.pdf",
+        name: "",
+        provider: "",
+        link: "",
         start_date: new Date(),
         end_date: new Date(),
       },
     ],
-    interests: ["Coding", "Reading", "Traveling"],
-    resume_link: "https://example.com/resume.pdf",
-    portfolio_link: "https://example.com/portfolio",
-    linkedin_link: "https://www.linkedin.com/in/aditya-tiwari/",
-    github_link: "https://github.com/aditya-tiwari",
+    interests: [],
+    resume_link: "",
+    portfolio_link: "",
+    linkedin_link: "",
+    github_link: "",
   };

@@ -57,16 +57,52 @@ export function EditConcept({
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof conceptsSchema>) {
     const res = await updateConcept(conceptsData.id, values);
-    if (res) {
-      setConceptsData((prev) =>
-        prev.map((concept) =>
-          concept.id === conceptsData.id ? { ...concept, ...values } : concept
-        )
+    if (!res?.concept) return;
+
+    const updatedConcept = res.concept;
+
+    setConceptsData((prev) => {
+      const oldConcept = prev.find((c) => c.id === updatedConcept.id);
+      if (!oldConcept) return prev;
+
+      const oldIndex = Number(oldConcept.order_index);
+      const newIndex = Number(updatedConcept.order_index);
+
+      let updated = prev.map((c) => ({ ...c }));
+
+      // 🔼 Moving UP (e.g., 3 → 1)
+      if (newIndex < oldIndex) {
+        updated = updated.map((c) =>
+          Number(c.order_index) >= newIndex && Number(c.order_index) < oldIndex
+            ? { ...c, order_index: Number(c.order_index) + 1 }
+            : c,
+        );
+      }
+
+      // 🔽 Moving DOWN (e.g., 1 → 4)
+      if (newIndex > oldIndex) {
+        updated = updated.map((c) =>
+          Number(c.order_index) > oldIndex && Number(c.order_index) <= newIndex
+            ? { ...c, order_index: Number(c.order_index) - 1 }
+            : c,
+        );
+      }
+
+      // Replace edited concept
+      updated = updated.map((c) =>
+        c.id === updatedConcept.id ? updatedConcept : c,
       );
-      setOpen(false);
-    }
+
+      // Final sort
+      return updated.sort(
+        (a, b) => Number(a.order_index) - Number(b.order_index),
+      );
+    });
+
+    setOpen(false);
     console.log(res);
   }
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="min-w-150">

@@ -1,3 +1,4 @@
+import { Milestone } from "@/index";
 import {
   Dialog,
   DialogClose,
@@ -20,7 +21,7 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { createMilestones } from "@/utils/internship";
+import { createMilestones, editMilestone } from "@/utils/internship";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Popover,
@@ -35,56 +36,86 @@ import {
   NativeSelect,
   NativeSelectOption,
 } from "@/components/ui/native-select";
-import { Milestone } from "@/index";
 
-interface AddMilestonesProps {
-  open: boolean;
-  milestoneDataLength: number;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+interface EditMilestonesProps {
+  open: Milestone | null;
+  setOpen: React.Dispatch<React.SetStateAction<Milestone | null>>;
   setMilestoneData: React.Dispatch<React.SetStateAction<Milestone[]>>;
   workboardId: string;
 }
 
-export function AddMilestones({
+const EditMilestones = ({
   open,
   setOpen,
-  workboardId,
-  milestoneDataLength,
   setMilestoneData,
-}: AddMilestonesProps) {
+  workboardId,
+}: EditMilestonesProps) => {
   const form = useForm<z.infer<typeof milestonesSchema>>({
     resolver: zodResolver(milestonesSchema),
-    defaultValues: { ...milestonesDefaultValues, order_index: milestoneDataLength },
+    defaultValues: {
+      title: open?.title || "",
+      description: open?.description || "",
+      order_index: open?.order_index || 0,
+      status: open?.status || "planned",
+      start_date: new Date(open?.start_date as string) || new Date(),
+      due_date: new Date(open?.due_date as string) || new Date(),
+    },
   });
   const onSubmit = async (values: z.infer<typeof milestonesSchema>) => {
-    const res = await createMilestones(workboardId, values);
+    const res = await editMilestone(open?.id as string, values);
+
+    if (!res) return;
+
+    const updatedMilestone = res.milestone;
+
     setMilestoneData((prev) => {
-      const newOrder = res.milestone.order_index;
+      const oldMilestone = prev.find((m) => m.id === updatedMilestone.id);
+      if (!oldMilestone) return prev;
 
-      const updated = prev.map((m) =>
-        m.order_index >= newOrder
-          ? { ...m, order_index: m.order_index + 1 }
-          : m,
+      const oldIndex = oldMilestone.order_index;
+      const newIndex = updatedMilestone.order_index;
+
+      let updated = prev.map((m) => ({ ...m }));
+
+      // 🔼 Moving UP (2 → 0)
+      if (newIndex < oldIndex) {
+        updated = updated.map((m) =>
+          m.order_index >= newIndex && m.order_index < oldIndex
+            ? { ...m, order_index: m.order_index + 1 }
+            : m,
+        );
+      }
+
+      // 🔽 Moving DOWN (0 → 3)
+      if (newIndex > oldIndex) {
+        updated = updated.map((m) =>
+          m.order_index > oldIndex && m.order_index <= newIndex
+            ? { ...m, order_index: m.order_index - 1 }
+            : m,
+        );
+      }
+
+      // Replace edited milestone
+      updated = updated.map((m) =>
+        m.id === updatedMilestone.id ? updatedMilestone : m,
       );
 
-      return [...updated, res.milestone].sort(
-        (a, b) => a.order_index - b.order_index,
-      );
+      // Sort final order
+      return updated.sort((a, b) => a.order_index - b.order_index);
     });
 
-    if (res) {
-      setOpen(false);
-    }
+    setOpen(null);
   };
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={!!open} onOpenChange={() => setOpen(null)}>
       <DialogContent className="min-w-150">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <DialogHeader>
-              <DialogTitle>Add Milestones</DialogTitle>
+              <DialogTitle>Edit Milestones</DialogTitle>
               <DialogDescription>
-                Add a new milestone to the internship
+                Edit a new milestone to the internship
               </DialogDescription>
             </DialogHeader>
             <div className=" space-y-5">
@@ -254,4 +285,6 @@ export function AddMilestones({
       </DialogContent>
     </Dialog>
   );
-}
+};
+
+export default EditMilestones;

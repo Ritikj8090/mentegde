@@ -28,7 +28,6 @@ import {
 import { FaGenderless } from "react-icons/fa";
 import { Badge } from "../ui/badge";
 import { calculateAge } from "@/constant/HelperFunctions";
-import { UPLOAD_PHOTOS_URL } from "../config/CommonBaseUrl";
 
 type ReviewProps = {
   Personalform: UseFormReturn<z.infer<typeof PersonalSchema>>;
@@ -53,7 +52,7 @@ const ReviewInfo = ({
           <div className="mb-12 flex flex-col items-center text-center">
             <Avatar className="mb-6 h-32 w-32 border-4 border-primary/20 ring-2 ring-primary/10">
               <AvatarImage
-                src={UPLOAD_PHOTOS_URL + Personalform.getValues("avatar")}
+                src={Personalform.getValues("avatar")}
                 alt={Personalform.getValues("full_name")}
               />
               <AvatarFallback className="bg-primary/10 text-3xl font-semibold text-primary">

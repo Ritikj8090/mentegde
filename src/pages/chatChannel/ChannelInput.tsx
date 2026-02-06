@@ -157,7 +157,7 @@ const ChannelInput = ({
             className="hidden"
             onChange={(e) => handleFileSelect(e.target.files)}
             accept="image/*,.pdf,.doc,.docx,.txt,.zip"
-            disabled={isUploading}
+            disabled={!openInput || isUploading}
           />
 
           {/* TEXT INPUT */}
@@ -177,14 +177,14 @@ const ChannelInput = ({
           />
 
           {/* RIGHT ICONS */}
-          <div className="absolute right-2 bottom-2 flex gap-1">
+          {/* <div className="absolute right-2 bottom-2 flex gap-1">
             <Button variant="ghost" size="icon" disabled={isUploading}>
               <AtSign className="h-4 w-4" />
             </Button>
             <Button variant="ghost" size="icon" disabled={isUploading}>
               <Smile className="h-4 w-4" />
             </Button>
-          </div>
+          </div> */}
         </div>
 
         {/* SEND BUTTON */}

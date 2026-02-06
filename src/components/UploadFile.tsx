@@ -39,8 +39,10 @@ function fileKind(mime: string) {
 
 export function FileUploadForm({
   onUpload,
+  uploading,
 }: {
   onUpload: (files: File[]) => Promise<void> | void;
+  uploading?: boolean;
 }) {
   const form = useForm<UploadFormValues>({
     resolver: zodResolver(uploadSchema),
@@ -192,8 +194,8 @@ export function FileUploadForm({
           )}
         />
 
-        <Button type="submit" className="w-full">
-          {form.formState.isSubmitting ? "Uploading..." : "Upload"}
+        <Button type="submit" className="w-full" disabled={uploading}>
+          {uploading ? "Uploading..." : "Upload"}
         </Button>
       </form>
     </Form>

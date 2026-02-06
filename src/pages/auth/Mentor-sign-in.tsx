@@ -28,6 +28,7 @@ import {
   setWebsocketToken,
 } from "@/components/features/auth/authSlice";
 import { AxiosError } from "axios";
+import { BASE_URL } from "@/components/config/CommonBaseUrl";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -52,7 +53,7 @@ const MentorSignIn = () => {
     try {
       const { user, websocketToken } = await mentorLogin(
         values.email,
-        values.password
+        values.password,
       );
 
       dispatch(setUser({ user }));
@@ -162,6 +163,9 @@ const MentorSignIn = () => {
                   variant="outline"
                   className="w-full justify-center"
                   type="button"
+                  onClick={() =>
+                    (window.location.href = `${BASE_URL}/auth/google?role=mentor`)
+                  }
                 >
                   <Google />
                   <span className="ml-2">Login with Google</span>

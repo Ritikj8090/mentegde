@@ -28,6 +28,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { mentorSignup } from "@/utils/mentorAuth";
+import { GoogleLogin } from "@react-oauth/google";
 
 const formSchema = z
   .object({
@@ -73,7 +74,7 @@ const MentorSignUp = () => {
       const result = await mentorSignup(
         values.full_name,
         values.email,
-        values.password
+        values.password,
       );
 
       dispatch(setUser({ user: result.data }));
@@ -262,9 +263,9 @@ const MentorSignUp = () => {
                     variant="outline"
                     className="w-full justify-center"
                     type="button"
-                    onClick={() => {
-                      window.location.href = `${BASE_URL}/google?state=role:mentor`;
-                    }}
+                    onClick={() =>
+                      (window.location.href = `${BASE_URL}/auth/google?role=mentor`)
+                    }
                   >
                     <Google />
                     <span className="ml-2">Sign up with Google</span>

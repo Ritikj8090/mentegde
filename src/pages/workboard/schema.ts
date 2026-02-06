@@ -32,24 +32,56 @@ export const conceptsSchema = z.object({
   }),
 });
 
-export const tasksSchema = z.object({
-  title: z.string().min(2, {
-    message: "Please enter a title for the concept.",
-  }),
-  description: z.string().min(2, {
-    message: "Please enter a description for the concept.",
-  }),
-  status: z.enum(["todo", "in_progress", "blocked", "done"], {
-    required_error: "Please select a status",
-  }),
-  assigned_to: z.string().optional(),
-  assigned_to_ids: z.array(z.string()).min(1, {
-    message: "Please select at least one user.",
-  }),
-  due_date: z.date({
-    required_error: "Please select a due date for the milestone.",
-  })
+const taskQuizSchema = z.object({
+  question_text: z.string().min(2),
+  options: z.array(z.string().min(1)).length(4),
+  correct_option: z.string(),
 });
+
+const taskCodingSchema = z.object({
+  question_text: z.string().min(2),
+  starter_code: z.string().min(2),
+  test_cases: z.array(z.string()).min(1),
+  expected_output: z.array(z.string()).min(1),
+  language: z.string(),
+});
+
+const taskTextSchema = z.object({
+  question_text: z.string().min(2),
+  guidelines: z.array(z.string()).min(1),
+  word_limit_min: z.number(),
+  word_limit_max: z.number(),
+});
+
+const baseTaskSchema = z.object({
+  title: z.string().min(2),
+  description: z.string().min(2),
+  status: z.enum(["todo", "in_progress", "blocked", "done"]),
+  assigned_to: z.string().optional(),
+  assigned_to_ids: z.array(z.string()).min(1),
+  due_date: z.date(),
+  score: z.number(),
+});
+
+export const tasksSchema = z.intersection(
+  baseTaskSchema,
+  z.discriminatedUnion("task_type", [
+    z.object({
+      task_type: z.literal("quiz"),
+      quiz: z.array(taskQuizSchema),
+    }),
+
+    z.object({
+      task_type: z.literal("coding"),
+      coding: taskCodingSchema,
+    }),
+
+    z.object({
+      task_type: z.literal("text"),
+      text: taskTextSchema,
+    }),
+  ]),
+);
 
 export const assignmentsSchema = z.object({
   title: z.string().min(2, {
@@ -61,9 +93,11 @@ export const assignmentsSchema = z.object({
   status: z.enum(["draft", "published", "closed"], {
     required_error: "Please select a status",
   }),
-  max_score: z.number({
-    required_error: "Please enter a maximum score for the assignment.",
-  }).min(1),
+  max_score: z
+    .number({
+      required_error: "Please enter a maximum score for the assignment.",
+    })
+    .min(1),
   assigned_to: z.string().optional(),
   assigned_to_ids: z.array(z.string()).min(1, {
     message: "Please select at least one user to assign the assignment to.",
@@ -71,6 +105,9 @@ export const assignmentsSchema = z.object({
   assign_all: z.boolean().optional(),
   due_date: z.date({
     required_error: "Please select a due date for the milestone.",
+  }),
+  submission_types: z.string().min(1, {
+    message: "Please select at least one submission type.",
   }),
 });
 
@@ -97,6 +134,28 @@ export const tasksDefaultValues: z.infer<typeof tasksSchema> = {
   assigned_to: "",
   assigned_to_ids: [],
   due_date: new Date(),
+  task_type: "quiz",
+  score: 0,
+  quiz: [
+    {
+      question_text: "",
+      options: ["", "", "", ""],
+      correct_option: "0",
+    },
+  ],
+  coding: {
+    question_text: "",
+    starter_code: "",
+    test_cases: [""],
+    expected_output: [""],
+    language: "",
+  },
+  text: {
+    question_text: "",
+    guidelines: [""],
+    word_limit_min: 0,
+    word_limit_max: 0,
+  },
 };
 
 export const assignmentsDefaultValues: z.infer<typeof assignmentsSchema> = {
@@ -108,4 +167,5 @@ export const assignmentsDefaultValues: z.infer<typeof assignmentsSchema> = {
   assigned_to_ids: [],
   assign_all: false,
   due_date: new Date(),
+  submission_types: "",
 };

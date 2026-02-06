@@ -5,8 +5,21 @@ export const getConversationList = async () => {
   return response.data.conversations;
 };
 
+export const createConversation = async (
+  participant_id: string,
+  participant_role: string,
+) => {
+  const response = await api.post("/chat/conversations", {
+    participant_id,
+    participant_role,
+  });
+  return response.data.conversation;
+};
+
 export const getMessages = async (conversationId: string) => {
-  const response = await api.get(`chat/conversations/${conversationId}/messages?limit=50&offset=0`);
+  const response = await api.get(
+    `chat/conversations/${conversationId}/messages?limit=50&offset=0`,
+  );
   return response.data.messages;
 };
 

@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Internship } from "@/index";
-import { getAllInternshipForIntern, joinInternship } from "@/utils/internship";
+import { getAllInternshipForIntern } from "@/utils/internship";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
@@ -32,10 +32,16 @@ const SearchInternship = () => {
           <FaSearch className="text-pink-400" /> Search Internships
         </CardTitle>
       </CardHeader>
-      <CardContent className=" overflow-y-scroll space-y-3">
-        {internships.map((internship: Internship) => (
-          <RenderCard key={internship.id} internship={internship} />
-        ))}
+      <CardContent className=" overflow-y-scroll space-y-3 h-full">
+        {internships.length > 0 ? (
+          internships.map((internship) => (
+            <RenderCard key={internship.id} internship={internship} />
+          ))
+        ) : (
+          <p className="flex items-center justify-center text-center h-full text-muted-foreground">
+            No internships available at the moment.
+          </p>
+        )}
       </CardContent>
     </Card>
   );
@@ -45,15 +51,6 @@ export default SearchInternship;
 
 const RenderCard = ({ internship }: { internship: Internship }) => {
   const [ViewInternship, setViewInternship] = useState(false);
-
-  const handleJoinInternship = async (
-    internship_id: string,
-    domain_name: string,
-    domain_id: string,
-  ) => {
-    const res = await joinInternship(internship_id, domain_id, domain_name);
-    console.log(res);
-  };
   return (
     <>
       <Card>
@@ -92,7 +89,9 @@ const RenderCard = ({ internship }: { internship: Internship }) => {
                       {domainName}
                     </CardTitle>
                     <div className=" space-x-3">
-                      <a href={`/payment?internshipId=${internship.id}&domainId=${domainData.id}&domainName=${domainName}`}>
+                      <a
+                        href={`/payment?internshipId=${internship.id}&domainId=${domainData.id}&domainName=${domainName}`}
+                      >
                         <Button
                           variant="outline"
                           size="default"

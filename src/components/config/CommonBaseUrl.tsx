@@ -1,6 +1,8 @@
 export const BASE_URL: string = import.meta.env.VITE_API_BASE_URL;
 export const WS_URL: string = import.meta.env.VITE_WS_URL;
 export const UPLOAD_PHOTOS_URL: string = import.meta.env.VITE_API_UPLOAD_PHOTOS_URL;
+export const GOOGLE_CLIENT_ID: string = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+export const GOOGLE_SECRET_ID: string = import.meta.env.VITE_GOOGLE_SECRET_ID;
 
 export const TURN_CONFIG = {
   urls: [

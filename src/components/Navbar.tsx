@@ -102,7 +102,7 @@ export default function Navbar({
                   >
                     <Avatar className="h-8 w-8">
                       <AvatarImage
-                        src={UPLOAD_PHOTOS_URL + user?.avatar}
+                        src={user?.avatar}
                         alt={""}
                       />
                       <AvatarFallback>

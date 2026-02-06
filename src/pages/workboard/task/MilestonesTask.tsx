@@ -116,7 +116,7 @@ const MilestonesTask = ({
           </div>
         )}
       </div>
-      {showAddTasks && (
+      {/* {showAddTasks && (
         <AddTasks
           open={showAddTasks}
           setOpen={setShowAddTasks}
@@ -125,7 +125,7 @@ const MilestonesTask = ({
           milestoneId={milestoneId}
           setTasksData={setTasksData}
         />
-      )}
+      )} */}
     </>
   );
 };

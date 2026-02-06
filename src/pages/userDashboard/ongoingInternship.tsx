@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { MessageSquare } from "lucide-react";
+import { File, MessageSquare } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { FaClipboardList } from "react-icons/fa";
 import { cn } from "@/lib/utils";
@@ -39,10 +39,19 @@ const OngoingInternship = () => {
           <FaClipboardList className="text-blue-400" /> Ongoing Internships
         </CardTitle>
       </CardHeader>
-      <CardContent className=" overflow-y-scroll space-y-3">
-        {ongoingInternships?.map((internship: OngoingInternshipsForIntern) => (
-          <RenderCard key={internship.domain_id} internship={internship} />
-        ))}
+      <CardContent className=" overflow-y-scroll space-y-3 h-full">
+        {ongoingInternships && ongoingInternships.length > 0 ? (
+          ongoingInternships.map((internship) => (
+            <RenderCard
+              key={internship.internship_id}
+              internship={internship}
+            />
+          ))
+        ) : (
+          <p className="flex items-center justify-center text-center h-full text-muted-foreground">
+            No ongoing internships found.
+          </p>
+        )}
       </CardContent>
     </Card>
   );
@@ -150,6 +159,17 @@ const RenderCard = ({
               Chat
             </Button>
           </a>
+          {internship.completed_items === internship.total_items && (
+            <a href={`/certificate/${internship.certificate_number}`}>
+              <Button
+                variant="outline"
+                className="gap-2 font-medium bg-transparent cursor-pointer"
+              >
+                <File className="h-4 w-4" />
+                View Certificate
+              </Button>
+            </a>
+          )}
         </CardFooter>
       </Card>
       {ViewInternship && (
