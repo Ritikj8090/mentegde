@@ -15,7 +15,7 @@ import {
   Star,
 } from "lucide-react";
 import Template from "./Template";
-import { getCertificateDetail } from "@/utils/internship";
+import { generateCertificate, getCertificateDetail } from "@/utils/internship";
 import { CertificateData } from "@/index";
 import { useSelector } from "react-redux";
 import { RootState } from "@/components/store/store";
@@ -25,6 +25,7 @@ import { LOGO_NAME } from "@/constant";
 import { Badge } from "@/components/ui/badge";
 import { useParams } from "react-router-dom";
 import confetti from "canvas-confetti";
+import { api } from "@/services/api";
 
 const handleClick = () => {
   const duration = 5 * 1000;
@@ -115,12 +116,7 @@ const Certificatepage = () => {
     setDownloading(true);
 
     const html = certificateRef.current.outerHTML;
-
-    const res = await fetch("https://localhost:4000/generate-certificate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ html }),
-    });
+    const res = await generateCertificate(html);
 
     if (!res.ok) {
       const text = await res.text();

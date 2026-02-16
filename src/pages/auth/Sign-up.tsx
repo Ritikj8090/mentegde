@@ -32,7 +32,7 @@ const SignUp = () => {
       </section>
 
       {/* Signup Cards */}
-      <section className=" grid grid-cols-2 gap-4">
+      <section className=" md:grid grid-cols-2 gap-5 flex flex-col">
         {/* User Card */}
         <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg duration-300 border-border/50 hover:shadow-primary/40 transition ease-in-out duration-200">
           <CardContent>

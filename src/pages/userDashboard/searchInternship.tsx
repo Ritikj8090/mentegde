@@ -27,12 +27,12 @@ const SearchInternship = () => {
 
   return (
     <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50  max-h-screen mb-4">
-      <CardHeader>
-        <CardTitle className="text-2xl font-bold mb-4 flex items-center gap-2">
+      <CardHeader className=" px-2">
+        <CardTitle className="md:text-2xl text-lg font-bold md:mb-4 flex items-center gap-2">
           <FaSearch className="text-pink-400" /> Search Internships
         </CardTitle>
       </CardHeader>
-      <CardContent className=" overflow-y-scroll space-y-3 h-full">
+      <CardContent className=" overflow-y-scroll space-y-3 h-full px-2">
         {internships.length > 0 ? (
           internships.map((internship) => (
             <RenderCard key={internship.id} internship={internship} />
@@ -58,19 +58,19 @@ const RenderCard = ({ internship }: { internship: Internship }) => {
         <CardHeader>
           <div className="space-y-2">
             <div className=" flex justify-between">
-              <CardTitle className="text-xl font-semibold">
+              <CardTitle className="md:text-xl font-semibold">
                 {internship.internship_title}
               </CardTitle>
               <div className="flex flex-col items-center gap-3">
-                <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+                <span className="md:text-sm text-xs font-medium text-muted-foreground whitespace-nowrap">
                   ID: {internship.id.slice(0, 5)}
                 </span>
-                <span className=" text-primary text-xl font-bold">
+                <span className=" text-primary md:text-xl font-bold">
                   {internship.price}
                 </span>
               </div>
             </div>
-            <CardDescription className="text-sm text-muted-foreground">
+            <CardDescription className="md:text-sm text-xs text-muted-foreground">
               <span className="font-medium">{internship.description}</span>
             </CardDescription>
           </div>
@@ -78,14 +78,14 @@ const RenderCard = ({ internship }: { internship: Internship }) => {
 
         {/* Domains Section */}
         <CardContent className="space-y-4">
-          <h2 className="text-xl font-semibold text-foreground">Domains</h2>
+          <h2 className="md:text-xl font-semibold text-foreground">Domains</h2>
 
           <div className=" space-y-2">
             {Object.entries(internship.domains).map(
               ([domainName, domainData]) => (
                 <Card key={domainName} className="py-2 px-0 pt-4">
                   <CardHeader className="flex flex-row items-center justify-between px-3">
-                    <CardTitle className="text-xl font-bold text-primary capitalize">
+                    <CardTitle className="md:text-xl font-bold text-primary capitalize">
                       {domainName}
                     </CardTitle>
                     <div className=" space-x-3">
@@ -95,7 +95,7 @@ const RenderCard = ({ internship }: { internship: Internship }) => {
                         <Button
                           variant="outline"
                           size="default"
-                          className=" cursor-pointer flex-1 border-green-600/50 bg-green-600/10 text-green-600 hover:bg-green-600/50 hover:text-white"
+                          className=" text-xs md:text-base cursor-pointer flex-1 border-green-600/50 bg-green-600/10 text-green-600 hover:bg-green-600/50 hover:text-white"
                         >
                           Join
                         </Button>
@@ -103,14 +103,14 @@ const RenderCard = ({ internship }: { internship: Internship }) => {
                       <Button
                         variant="outline"
                         size="default"
-                        className=" cursor-pointer flex-1 border-primary/50 bg-primary/10 text-primary hover:bg-primary/50 hover:text-white"
+                        className="text-xs md:text-base cursor-pointer flex-1 border-primary/50 bg-primary/10 text-primary hover:bg-primary/50 hover:text-white"
                         onClick={() => setViewInternship(true)}
                       >
                         View Details
                       </Button>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-3 text-sm px-3">
+                  <CardContent className="space-y-3 text-xs md:text-sm px-3">
                     <Separator className="-mt-3" />
                     <div className="flex gap-2">
                       <span className="font-semibold text-foreground">

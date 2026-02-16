@@ -519,11 +519,12 @@ export type ChatMessage = {
 };
 
 export type ChatFile = {
-  id?: string;
-  name?: string;
-  url?: string;
-  type?: string; // image, pdf, doc, etc.
-  size?: number;
+  id: string
+  file_type: 'image' | 'pdf' | 'document' | 'file'
+  file_name: string
+  file_size: string
+  file_url: string
+  created_at: Date
 };
 
 export interface Coupon {

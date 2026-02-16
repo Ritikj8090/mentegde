@@ -54,3 +54,16 @@ export const findMentorAndUser = async (searchTerm: string) => {
   });
   return response.data.users as tokenUser[];
 };
+
+export const changePassword = async (current_password: string, new_password: string) => {
+  const response = await api.put("/auth/password", {
+    current_password,
+    new_password,
+  });
+  return response.data;
+}
+
+export const getPasswordLastChanged = async () => {
+  const response = await api.get("/auth/password-changed-at");
+  return response.data.password_changed_at;
+}

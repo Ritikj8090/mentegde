@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/components/store";
 import { logout } from "@/components/features/auth/authSlice";
-import SearchBar from "./Search";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,14 +16,17 @@ import { useNavigate } from "react-router-dom";
 import { useLiveMentorsSocket } from "@/hooks/useLiveMentors";
 import type { AppDispatch } from "@/components/store";
 import { userLogout } from "@/utils/auth";
-import { UPLOAD_PHOTOS_URL } from "./config/CommonBaseUrl";
 
 export default function Navbar({
   setMenuToggle,
   menuToggle,
+  mobileToggle,
+  setMobileToggle,
 }: {
-  setMenuToggle: React.Dispatch<React.SetStateAction<boolean>>;
   menuToggle: boolean;
+  setMenuToggle: React.Dispatch<React.SetStateAction<boolean>>;
+  mobileToggle: boolean;
+  setMobileToggle: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   useLiveMentorsSocket();
   const { isAuthenticated, user } = useSelector(
@@ -32,6 +34,7 @@ export default function Navbar({
   );
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const pathname = window.location.pathname;
 
   const handleLogout = async () => {
     try {
@@ -47,14 +50,14 @@ export default function Navbar({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 ml-0 md:ml-8">
           <div className="flex items-center">
-            {/* <Button
+            <Button
               variant="ghost"
               size="icon"
-              // onClick={toggleSidebar}
+              onClick={() => setMobileToggle(!mobileToggle)}
               className="mr-2 md:hidden"
             >
               <Menu className="h-5 w-5" />
-            </Button> */}
+            </Button>
             {isAuthenticated && (
               <Button
                 variant="ghost"
@@ -65,10 +68,8 @@ export default function Navbar({
               </Button>
             )}
             <a href="/" className="flex-shrink-0 flex gap-2 items-center">
-              <img src="/LOGO.svg" alt="mentedge" className=" h-7 w-7" />
-              <span className="text-2xl font-bold">
-                Mentedge
-              </span>
+              <img src="/LOGO.svg" alt="mentedge" className=" md:h-7 md:w-7 h-5 w-5" />
+              <span className="md:text-2xl text-lg font-bold hidden md:inline">Mentedge</span>
             </a>
           </div>
           {/* {isAuthenticated && (
@@ -89,7 +90,16 @@ export default function Navbar({
                 </div>
               </div>
               <div className="flex md:hidden">
-                <Button>Login</Button>
+                {pathname === "/sign-in" && (
+                  <Button variant="outline" asChild>
+                    <a href="/sign-up">Create Account</a>
+                  </Button>
+                )}
+                {pathname === "/sign-up" && (
+                  <Button asChild>
+                    <a href="/sign-in">Login</a>
+                  </Button>
+                )}
               </div>
             </>
           ) : (
@@ -101,10 +111,7 @@ export default function Navbar({
                     className="relative h-8 w-8 rounded-full"
                   >
                     <Avatar className="h-8 w-8">
-                      <AvatarImage
-                        src={user?.avatar}
-                        alt={""}
-                      />
+                      <AvatarImage src={user?.avatar} alt={""} />
                       <AvatarFallback>
                         {user?.full_name
                           ?.split(" ")

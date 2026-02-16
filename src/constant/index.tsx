@@ -4,10 +4,48 @@ import {
   Briefcase,
   Heart,
   FileCheck,
+  Settings2,
+  Info,
+  MessageCircleIcon,
+  Home,
+  InfoIcon,
 } from "lucide-react";
 
+export const navMain = [
+  {
+    title: "Dashboard",
+    url: "/dashboard",
+    icon: Home,
+    visibleTo: ["user", "mentor"],
+  },
+  {
+    title: "Overview",
+    url: "/internship-overview",
+    icon: InfoIcon,
+    visibleTo: ["mentor"],
+  },
+  {
+    title: "Chats",
+    url: "/chat",
+    icon: MessageCircleIcon,
+    visibleTo: ["user", "mentor"],
+  },
+  {
+    title: "About",
+    url: "/about",
+    icon: Info,
+    visibleTo: ["user", "mentor"],
+  },
+  {
+    title: "Settings",
+    url: "/settings",
+    icon: Settings2,
+    visibleTo: ["user", "mentor"],
+  },
+];
+
 export const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-export const LOGO_NAME = 'Instant Mentor'
+export const LOGO_NAME = "Instant Mentor";
 export const ACCEPTED_IMAGE_TYPES = [
   "image/jpeg",
   "image/jpg",

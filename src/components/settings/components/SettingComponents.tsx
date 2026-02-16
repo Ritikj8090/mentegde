@@ -9,8 +9,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ChevronRight, Eye, EyeOff } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -26,9 +25,14 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { defaultAvatars } from "@/constant";
 import { ChangeEvent, useEffect, useState } from "react";
-import { uploadAvatar } from "@/utils/upload";
+import { updateUserORMentorInfo, uploadAvatar } from "@/utils/upload";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/components/store";
+import { setLoading } from "@/components/store/slices/loadingSlice";
+import { Button } from "@/components/ui/button";
+import { changePassword } from "@/utils/auth";
+import { AxiosError } from "axios";
 
 const emailSchema = z.object({
   email: z.string().email("Email a valid email address."),
@@ -67,10 +71,10 @@ export const EmailEditButton = () => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <div>
-          <span>Change</span>
-          <ChevronRight className="ml-2 h-4 w-4" />
-        </div>
+        <Button variant="outline" size="sm">
+          Change
+          <ChevronRight />
+        </Button>
       </AlertDialogTrigger>
       <AlertDialogContent className="space-y-4">
         <AlertDialogHeader>
@@ -124,6 +128,10 @@ export const EmailEditButton = () => {
 };
 
 export const PasswordEditButton = () => {
+  const [open, setOpen] = useState(false); // ✅ control dialog
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+
   const form = useForm<z.infer<typeof passwordSchema>>({
     resolver: zodResolver(passwordSchema),
     defaultValues: {
@@ -133,28 +141,40 @@ export const PasswordEditButton = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof passwordSchema>) {
+  async function onSubmit(values: z.infer<typeof passwordSchema>) {
     if (values.password !== values.confirmPassword) {
       toast.warning("Passwords do not match.");
       return;
     }
+
     if (values.currentPassword === values.password) {
       toast.error("New password cannot be the same as the current password.");
       return;
     }
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    toast.success("Password changed successfully.");
-    console.log(values);
+
+    try {
+      await changePassword(values.currentPassword, values.password);
+
+      toast.success("Password changed successfully.");
+      window.location.reload(); // reload to update password change time, can be optimized by just updating the state
+
+      setOpen(false); // ✅ close dialog on success
+    } catch (error: AxiosError | any) {
+      toast.error(
+        error.response?.data?.message || "Failed to change password.",
+      );
+    }
   }
+
   return (
-    <AlertDialog>
+    <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
-        <div>
-          <span>Change</span>
-          <ChevronRight className="ml-2 h-4 w-4" />
-        </div>
+        <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
+          Change
+          <ChevronRight />
+        </Button>
       </AlertDialogTrigger>
+
       <AlertDialogContent className="space-y-4">
         <AlertDialogHeader>
           <AlertDialogTitle>Change Password</AlertDialogTitle>
@@ -163,8 +183,10 @@ export const PasswordEditButton = () => {
             different from your previous ones.
           </AlertDialogDescription>
         </AlertDialogHeader>
+
         <Form {...form}>
-          <form className="space-y-8">
+          <form className="space-y-6">
+            {/* Current Password */}
             <FormField
               control={form.control}
               name="currentPassword"
@@ -172,12 +194,33 @@ export const PasswordEditButton = () => {
                 <FormItem>
                   <FormLabel>Current Password</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter current password" {...field} />
+                    <div className="relative">
+                      <Input
+                        type={showCurrentPassword ? "text" : "password"}
+                        placeholder="Enter current password"
+                        {...field}
+                      />
+                      <span className="absolute right-2 top-1/2 -translate-y-1/2">
+                        {showCurrentPassword ? (
+                          <EyeOff
+                            className="cursor-pointer h-4 w-5"
+                            onClick={() => setShowCurrentPassword(false)}
+                          />
+                        ) : (
+                          <Eye
+                            className="cursor-pointer h-4 w-5"
+                            onClick={() => setShowCurrentPassword(true)}
+                          />
+                        )}
+                      </span>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            {/* New Password */}
             <FormField
               control={form.control}
               name="password"
@@ -185,12 +228,33 @@ export const PasswordEditButton = () => {
                 <FormItem>
                   <FormLabel>New Password</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter new password" {...field} />
+                    <div className="relative">
+                      <Input
+                        type={showNewPassword ? "text" : "password"}
+                        placeholder="Enter new password"
+                        {...field}
+                      />
+                      <span className="absolute right-2 top-1/2 -translate-y-1/2">
+                        {showNewPassword ? (
+                          <EyeOff
+                            className="cursor-pointer h-4 w-5"
+                            onClick={() => setShowNewPassword(false)}
+                          />
+                        ) : (
+                          <Eye
+                            className="cursor-pointer h-4 w-5"
+                            onClick={() => setShowNewPassword(true)}
+                          />
+                        )}
+                      </span>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            {/* Confirm Password */}
             <FormField
               control={form.control}
               name="confirmPassword"
@@ -198,7 +262,11 @@ export const PasswordEditButton = () => {
                 <FormItem>
                   <FormLabel>Confirm New Password</FormLabel>
                   <FormControl>
-                    <Input placeholder="Confirm new password" {...field} />
+                    <Input
+                      type={showNewPassword ? "text" : "password"}
+                      placeholder="Confirm new password"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -206,10 +274,12 @@ export const PasswordEditButton = () => {
             />
           </form>
         </Form>
+
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
+
           <AlertDialogAction
-            type="submit"
+            type="button"
             onClick={form.handleSubmit(onSubmit)}
           >
             Save Password
@@ -259,16 +329,20 @@ export const DeleteAccountButton = () => {
 };
 
 export const ProfilePictureEditButton = ({
+  type = "default",
   open,
   setOpen,
   profilePicture,
   setProfilePicture,
 }: {
+  type?: "default" | "change";
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   profilePicture: string | undefined;
   setProfilePicture: (profilePicture: string | undefined) => void;
 }) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { isLoading } = useSelector((state: RootState) => state.loading);
   const [selectedAvatar, setSelectedAvatar] = useState(profilePicture);
   const [file, setFile] = useState<File | null>(null);
 
@@ -276,7 +350,14 @@ export const ProfilePictureEditButton = ({
     if (!file) {
       return;
     }
+    dispatch(setLoading(true));
     const result = await uploadAvatar(file);
+    if (result.url && type === "change") {
+      await updateUserORMentorInfo({ avatarUrl: result.url });
+      toast.success("Profile picture updated successfully.");
+      window.location.reload(); // reload to show new avatar, can be optimized by just updating the state
+    }
+    setLoading(false);
     setProfilePicture(result.url);
   };
 
@@ -326,8 +407,9 @@ export const ProfilePictureEditButton = ({
               await uploadImage(); // wait for upload
               setOpen(false); // close after update
             }}
+            disabled={isLoading}
           >
-            Save Profile Picture
+            {isLoading ? "Uploading..." : "Update Picture"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

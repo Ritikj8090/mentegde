@@ -21,7 +21,6 @@ import Onboarding from "./pages/onboarding/Onboarding";
 import MentorProfile from "./pages/MentorProfile";
 import MentorProfiles from "./pages/MentorProfile";
 import UserProfilePage from "./pages/userProfile";
-import InternshipDashboard from "./pages/mentorDashboard/Internship-dash";
 import WorkboardPage from "./pages/workboard/WorkboardPage";
 
 import AccessDenied from "./pages/AccessDenied";
@@ -31,6 +30,8 @@ import { PaymentPage } from "./pages/payment/PaymentPage";
 import ChatChannelPage from "./pages/chatChannel/ChatChannelPage";
 import ChatPage from "./pages/chats/Chatpage";
 import Certificatepage from "./pages/certificate/Certificatepage";
+import { ForgotPassword } from "./pages/auth/ForgotPassword";
+import Workboard from "./pages/workboards/WorkBoardsPage";
 
 const router = createBrowserRouter([
   {
@@ -48,8 +49,7 @@ const router = createBrowserRouter([
           { path: "sign-up/user", element: <UserSignUp /> },
           { path: "sign-in/mentor", element: <MentorSignIn /> },
           { path: "sign-up/mentor", element: <MentorSignUp /> },
-          { path: "about", element: <About /> },
-          { path: "contact", element: <Contact /> },
+          { path: "forgot-password", element: <ForgotPassword /> },
         ],
       },
 
@@ -67,7 +67,7 @@ const router = createBrowserRouter([
           { path: "mentor/profile", element: <MentorProfiles /> },
           { path: "mentor-profile/:id", element: <MentorProfile /> },
 
-          { path: "workboard/:internshipId", element: <WorkboardPage /> },
+          { path: "workboard/:internshipId", element: <Workboard /> },
           { path: "payment", element: <PaymentPage /> },
           {
             path: "internship-chat/:internshipId",
@@ -79,6 +79,8 @@ const router = createBrowserRouter([
 
       { path: "certificate/:certificateNumber", element: <Certificatepage /> },
       { path: "access-denied", element: <AccessDenied /> },
+      { path: "about", element: <About /> },
+      { path: "contact", element: <Contact /> },
     ],
   },
 

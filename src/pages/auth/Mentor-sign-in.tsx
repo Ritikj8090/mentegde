@@ -74,8 +74,8 @@ const MentorSignIn = () => {
   };
 
   return (
-    <main className=" container mx-auto grid grid-cols-2 h-full py-2 gap-3">
-      <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50  flex flex-col items-center">
+    <main className=" container mx-auto md:grid grid-cols-2 h-full py-2 gap-3 px-2">
+      <Card className="hidden md:flex bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 flex-col items-center">
         <CardHeader className=" flex flex-col items-center space-y-5">
           <img
             src="/mentors.png"
@@ -94,7 +94,7 @@ const MentorSignIn = () => {
           </CardDescription>
         </CardHeader>
       </Card>
-      <Card>
+      <Card className=" h-full">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">
             Welcome {LOGO_NAME}
@@ -126,7 +126,15 @@ const MentorSignIn = () => {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <div className=" flex items-center">
+                      <FormLabel>Password</FormLabel>
+                      <a
+                        href="/forgot-password?role=mentor"
+                        className="ml-auto text-sm underline-offset-2 hover:underline"
+                      >
+                        Forgot your password?
+                      </a>
+                    </div>
                     <FormControl>
                       <div className=" relative">
                         <span

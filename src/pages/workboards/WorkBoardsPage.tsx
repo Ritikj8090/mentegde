@@ -19,7 +19,7 @@ import { TasksSection } from "./TaskSection";
 import { AssignmentsSection } from "./AssignmentSection";
 
 export function Workboard() {
-  const internshipId = window.location.pathname.split("/")[2] || "997acedf-5e41-42c4-b61e-cb26c303d3cf";
+  const internshipId = window.location.pathname.split("/")[2];
   const [workboardData, setWorkboardData] = useState<WorkboardType | null>(
     null,
   );
@@ -34,14 +34,14 @@ export function Workboard() {
         const res =
           user?.role === "user"
             ? await getInternWorkboard(
-                internshipId || "997acedf-5e41-42c4-b61e-cb26c303d3cf",
+                internshipId,
               )
             : await getCurrentMentorWorkboard(
-                internshipId || "997acedf-5e41-42c4-b61e-cb26c303d3cf",
+                internshipId,
               );
 
         const progress = await getOngoingInternshipsForInternById(
-          internshipId || "997acedf-5e41-42c4-b61e-cb26c303d3cf",
+          internshipId,
         );
         console.log(res);
 

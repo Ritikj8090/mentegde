@@ -25,14 +25,14 @@ const SheduleInternship = () => {
     fetchInternships();
   }, []);
   return (
-    <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50  max-h-screen mb-4">
+    <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 max-h-screen mb-4">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold mb-4 flex items-center gap-2">
+        <CardTitle className="md:text-2xl text-lg font-bold md:mb-4 flex items-center gap-2">
           <Clock className="text-pink-400" /> Scheduled Internships
         </CardTitle>
       </CardHeader>
       {internships.length > 0 ? (
-        <CardContent className=" overflow-y-scroll">
+        <CardContent className=" overflow-y-scroll space-y-3 px-3">
           {internships.map((internship: Internship) => (
             <RenderCard key={internship.id} internship={internship} />
           ))}
@@ -57,19 +57,19 @@ const RenderCard = ({ internship }: { internship: Internship }) => {
         <CardHeader>
           <div className=" space-y-4">
             <div className=" flex justify-between">
-              <CardTitle className="text-2xl font-semibold flex items-center gap-2">
+              <CardTitle className="md:text-2xl text-lg font-semibold flex items-center gap-2">
                 {internship.internship_title}
               </CardTitle>
               <div className="flex flex-col items-center gap-3">
-                <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+                <span className="md:text-sm text-xs font-medium text-muted-foreground whitespace-nowrap">
                   ID: {internship.id.slice(0, 5)}
                 </span>
-                <span className=" text-primary text-2xl font-bold">
+                <span className=" text-primary md:text-2xl text-lg font-bold">
                   {internship.price}
                 </span>
               </div>
             </div>
-            <CardDescription className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+            <CardDescription className="flex flex-wrap items-center gap-3 md:text-sm text-xs text-muted-foreground">
               <span className="font-medium">{internship.description}</span>
             </CardDescription>
           </div>

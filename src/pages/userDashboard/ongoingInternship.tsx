@@ -33,13 +33,13 @@ const OngoingInternship = () => {
     fetchOngingInternship();
   }, []);
   return (
-    <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50  max-h-screen mb-4">
+    <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 max-h-screen mb-4">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold mb-4 flex items-center gap-2">
+        <CardTitle className="md:text-2xl text-lg font-bold md:mb-4 flex items-center gap-2">
           <FaClipboardList className="text-blue-400" /> Ongoing Internships
         </CardTitle>
       </CardHeader>
-      <CardContent className=" overflow-y-scroll space-y-3 h-full">
+      <CardContent className=" overflow-y-scroll space-y-3 h-full px-3">
         {ongoingInternships && ongoingInternships.length > 0 ? (
           ongoingInternships.map((internship) => (
             <RenderCard
@@ -79,29 +79,29 @@ const RenderCard = ({
         <CardHeader>
           <div className=" flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="space-y-2">
-              <CardTitle className="text-xl font-semibold">
+              <CardTitle className="md:text-2xl text-lg font-semibold">
                 {internship.internship_title}
               </CardTitle>
-              <CardDescription className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+              <CardDescription className="flex flex-wrap items-center gap-3 md:text-sm text-xs text-muted-foreground">
                 <span className="font-medium">
                   Duration: {internship.duration}
                 </span>
-                <span className="hidden sm:inline">|</span>
+                <span className="">|</span>
                 <span>
                   Start: {format(internship.start_date, "dd MMM yyyy")}
                 </span>
               </CardDescription>
             </div>
-            <div className="flex flex-col items-center gap-3">
-              <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+            <div className="flex md:flex-col items-center gap-3 justify-between">
+              <span className="md:text-sm text-xs font-medium text-muted-foreground whitespace-nowrap">
                 ID: {internship.internship_id.slice(0, 5)}
               </span>
               <Badge
                 className={cn(
-                  " capitalize",
+                  " capitalize md:text-sm text-xs",
                   internship.status === "published"
-                    ? "flex-1 border-green-600/50  text-white bg-green-600/50"
-                    : "flex-1 border-red-600/50 text-white bg-red-600/50",
+                    ? "flex border-green-600/50  text-white bg-green-600/50"
+                    : "flex border-red-600/50 text-white bg-red-600/50",
                 )}
               >
                 Ongoing
@@ -113,8 +113,8 @@ const RenderCard = ({
         <CardContent className=" space-y-3">
           {/* Progress Section */}
           <div className="flex items-center justify-between text-sm">
-            <span className="font-medium text-card-foreground">Progress</span>
-            <span className="font-semibold text-primary">
+            <span className="font-medium md:text-base text-xs text-card-foreground">Progress</span>
+            <span className="font-semibold md:text-base text-xs text-primary">
               {internship.progress_percent}% completed
             </span>
           </div>
@@ -129,8 +129,8 @@ const RenderCard = ({
             <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Description
             </h2>
-            <div className="rounded-lg bg-muted/50 p-4 backdrop-blur-sm">
-              <p className="text-base text-card-foreground">
+            <div className="rounded-lg bg-muted/50 md:p-4 p-2 backdrop-blur-sm">
+              <p className="md:text-base text-sm text-card-foreground">
                 {internship.domain_description || internship.description}
               </p>
             </div>
@@ -140,12 +140,12 @@ const RenderCard = ({
         <CardFooter className="flex flex-wrap gap-3">
           {/* Action Buttons */}
           <a href={`/workboard/${internship.internship_id}`}>
-            <Button className="flex-1 sm:flex-initial font-medium cursor-pointer">
+            <Button className="flex md:text-sm text-xs md:px-3 px-1 font-medium cursor-pointer">
               View Workboard
             </Button>
           </a>
           <Button
-            className="flex-1 sm:flex-initial font-medium cursor-pointer"
+            className="flex md:text-sm text-xs md:px-3 px-1 font-medium cursor-pointer"
             onClick={() => handleViewInternship(internship.internship_id)}
           >
             View Intern & Mentor
@@ -153,9 +153,9 @@ const RenderCard = ({
           <a href={`/internship-chat/${internship.internship_id}`}>
             <Button
               variant="outline"
-              className="gap-2 font-medium bg-transparent cursor-pointer"
+              className="gap-2 md:text-base text-xs md:px-3 px-1 font-medium bg-transparent cursor-pointer"
             >
-              <MessageSquare className="h-4 w-4" />
+              <MessageSquare className="md:h-4 md:w-4 h-2 w-2" />
               Chat
             </Button>
           </a>
@@ -163,9 +163,9 @@ const RenderCard = ({
             <a href={`/certificate/${internship.certificate_number}`}>
               <Button
                 variant="outline"
-                className="gap-2 font-medium bg-transparent cursor-pointer"
+                className="gap-2 md:text-base text-xs md:px-3 px-1 font-medium bg-transparent cursor-pointer"
               >
-                <File className="h-4 w-4" />
+                <File className="md:h-4 md:w-4 h-2 w-2" />
                 View Certificate
               </Button>
             </a>

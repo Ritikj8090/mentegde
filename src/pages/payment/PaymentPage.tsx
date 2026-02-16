@@ -38,6 +38,7 @@ import {
 } from "@/components/ui/form";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { AxiosError } from "axios";
 
 const formSchema = z.object({
   firstName: z.string().min(5, "Title must be at least 5 characters."),
@@ -275,11 +276,12 @@ export function PaymentPage() {
       });
       rzp.open();
     } catch (error) {
+      console.error(error);
       setIsProcessing(false);
       addToast({
         type: "error",
         title: "Payment Failed",
-        description: "Failed to initiate payment. Please try again.",
+        description: error ? error.response?.data.message || "An error occurred while initiating payment" : "An error occurred while initiating payment",
         duration: 5000,
       });
     }
@@ -288,49 +290,49 @@ export function PaymentPage() {
   const selectedDomain = internshhipData?.domains?.[domainName];
 
   return (
-    <div className="max-h-[calc(100vh-64px] container mx-auto">
+    <div className="max-h-[calc(100vh-64px)] container mx-auto">
       {/* Header */}
       <header className="border-b backdrop-blur-sm">
         <div className="py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div>
-              <h1 className="text-xl font-semibold">Checkout</h1>
-              <p className="text-sm text-muted-foreground">
+              <h1 className="md:text-xl font-semibold">Checkout</h1>
+              <p className="md:text-sm text-xs text-muted-foreground">
                 Complete your enrollment
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2 text-muted-foreground text-sm">
-            <Lock className="h-4 w-4" />
+          <div className="flex items-center gap-2 text-muted-foreground md:text-sm text-xs">
+            <Lock className="md:h-4 md:w-4 h-3 w-3" />
             <span>Secure Payment</span>
           </div>
         </div>
       </header>
 
-      <main className="py-8">
-        <div className="grid lg:grid-cols-3 gap-8">
+      <main className="lg:py-8 py-4">
+        <div className="lg:grid grid-cols-3 lg:gap-8 gap-4 space-y-3 lg:space-y-0">
           {/* Left Column - Form */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="col-span-2 md:space-y-6 space-y-3">
             {/* Step 1: Plan Selection */}
             <motion.section
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className=" rounded-xl border p-6"
+              className=" rounded-xl border lg:p-6 p-3"
             >
-              <div className="flex items-center gap-3 mb-6">
-                <span className="w-8 h-8 rounded-lg text-sm font-medium border bg-primary/30 flex items-center justify-center">
+              <div className="flex items-center gap-3 md:mb-6 mb-3">
+                <span className="lg:w-8 lg:h-8 w-6 h-6 rounded-lg lg:text-sm text-xs font-medium border bg-primary/30 flex items-center justify-center">
                   1
                 </span>
-                <h2 className="text-xl font-semibold">Selected Plan</h2>
+                <h2 className="lg:text-xl font-semibold">Selected Plan</h2>
               </div>
 
               <Card>
-                <CardContent className=" flex justify-between items-start">
+                <CardContent className="flex lg:flex-row flex-col justify-between items-end lg:items-start">
                   <div className="flex-1">
-                    <h3 className="text-lg font-medium mb-1 capitalize">
+                    <h3 className="lg:text-lg font-medium mb-1 capitalize">
                       {internshhipData?.internship_title}
                     </h3>
-                    <p className=" text-muted-foreground text-sm mb-3">
+                    <p className=" text-muted-foreground lg:text-sm text-xs mb-3">
                       {internshhipData?.description.slice(0, 80)}...
                     </p>
                     <div className="flex flex-wrap gap-2">
@@ -349,7 +351,7 @@ export function PaymentPage() {
                       ].map(({ icon: Icon, label }, index) => (
                         <Badge
                           key={index}
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs"
+                          className="inline-flex items-center gap-1.5 lg:px-2.5 py-1 px-2 rounded-md text-xs"
                         >
                           <Icon className="h-3.5 w-3.5" />
                           {label}
@@ -378,16 +380,16 @@ export function PaymentPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className=" rounded-xl border p-6"
+              className=" rounded-xl border lg:p-6 p-3"
             >
-              <div className="flex items-center gap-3 mb-6">
-                <span className="flex items-center border bg-primary/30 justify-center w-8 h-8 rounded-lg text-sm font-medium">
+              <div className="flex items-center gap-3 lg:mb-6 mb-3">
+                <span className="flex items-center border bg-primary/30 justify-center lg:w-8 lg:h-8 w-6 h-6 rounded-lg text-sm font-medium">
                   2
                 </span>
-                <h2 className="text-xl font-semibold">Your Information</h2>
+                <h2 className="lg:text-xl font-semibold">Your Information</h2>
               </div>
 
-              <p className=" text-muted-foreground text-sm mb-6">
+              <p className=" text-muted-foreground lg:text-sm text-xs mb-6">
                 Enter your details to complete the enrollment
               </p>
 
@@ -455,13 +457,13 @@ export function PaymentPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className=" rounded-xl border p-6"
+              className=" rounded-xl border lg:p-6 p-3"
             >
-              <div className="flex items-center gap-3 mb-6">
-                <span className="flex items-center border bg-primary/30 justify-center w-8 h-8 rounded-lg text-sm font-medium">
+              <div className="flex items-center gap-3 lg:mb-6 mb-3">
+                <span className="flex items-center border bg-primary/30 justify-center lg:w-8 lg:h-8 w-6 h-6 rounded-lg text-sm font-medium">
                   3
                 </span>
-                <h2 className="text-xl font-semibold ">Apply Coupon</h2>
+                <h2 className="lg:text-xl font-semibold ">Apply Coupon</h2>
               </div>
 
               <AnimatePresence mode="wait">
@@ -522,7 +524,7 @@ export function PaymentPage() {
                       <Button
                         onClick={applyCoupon}
                         disabled={isApplyingCoupon}
-                        className="h-12 px-6"
+                        className="h-12 lg:px-6"
                       >
                         {isApplyingCoupon ? (
                           <Loader2 className="h-5 w-5 animate-spin" />
@@ -551,13 +553,13 @@ export function PaymentPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className=" rounded-xl border p-6"
+              className=" rounded-xl border lg:p-6 p-3"
             >
-              <div className="flex items-center gap-3 mb-6">
+              <div className="flex items-center gap-3 lg:mb-6 mb-3">
                 <span className="flex items-center border bg-primary/30 justify-center w-8 h-8 rounded-lg text-sm font-medium">
                   4
                 </span>
-                <h2 className="text-xl font-semibold">Payment</h2>
+                <h2 className="lg:text-xl font-semibold">Payment</h2>
               </div>
 
               <div className="p-4 rounded-lg mb-6">
@@ -620,7 +622,7 @@ export function PaymentPage() {
           </div>
 
           {/* Right Column - Order Summary */}
-          <div className="lg:col-span-1">
+          <div className="col-span-1">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

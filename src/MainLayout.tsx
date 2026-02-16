@@ -13,9 +13,12 @@ import { RootState } from "@/components/store/store";
 import { CustomToastProvider } from "./components/Toaster";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { GOOGLE_CLIENT_ID } from "./components/config/CommonBaseUrl";
+import MobileNavbar from "./components/MobileNavbar";
+
 
 const MainLayout = () => {
   const [menuToggle, setMenuToggle] = useState(false);
+  const [mobileToggle, setMobileToggle] = useState(false);
   const { isLoading } = useAuth(); // Use the custom hook
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
@@ -24,21 +27,20 @@ const MainLayout = () => {
     console.log("MainLayout: Loading authentication state..."); // Debug log
     return <Loading />;
   }
-console.log(GOOGLE_CLIENT_ID)
   return (
     <ThemeProvider>
       <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-
-      <CustomToastProvider>
-        <SidebarProvider defaultOpen={false} open={menuToggle}>
-          <Navbar setMenuToggle={setMenuToggle} menuToggle={menuToggle} />
-          {isAuthenticated && <AppSidebar />}
-          <main className="pt-16 flex w-full min-h-screen">
-            <Outlet /> {/* Child components will be rendered here */}
-            <Toaster />
-          </main>
-        </SidebarProvider>
-      </CustomToastProvider>
+        <CustomToastProvider>
+          <SidebarProvider defaultOpen={false} open={menuToggle}>
+            <Navbar setMenuToggle={setMenuToggle} menuToggle={menuToggle} setMobileToggle={setMobileToggle} mobileToggle={mobileToggle} />
+            <MobileNavbar open={mobileToggle} onOpenChange={setMobileToggle} />
+            {isAuthenticated && <AppSidebar />}
+            <main className="pt-16 flex w-full min-h-screen px-2">
+              <Outlet /> {/* Child components will be rendered here */}
+              <Toaster />
+            </main>
+          </SidebarProvider>
+        </CustomToastProvider>
       </GoogleOAuthProvider>
     </ThemeProvider>
   );

@@ -44,48 +44,16 @@ const themeIcons = {
 const Appearance = () => {
   const { currentTheme, themes, setTheme } = useTheme();
   return (
-    // <Card>
-    //   <CardHeader>
-    //     <CardTitle className="flex items-center">
-    //       <Palette className="w-6 h-6 mr-2" />
-    //       Appearance
-    //     </CardTitle>
-    //     <CardDescription>
-    //       Customize how the application looks and feels
-    //     </CardDescription>
-    //   </CardHeader>
-    //   <CardContent className="space-y-4">
-    //     <div className="flex items-center justify-between">
-    //       <div className="space-y-0.5">
-    //         <Label>Theme</Label>
-    //         <div className="text-sm text-muted-foreground">
-    //           Switch between light and dark mode
-    //         </div>
-    //       </div>
-    //       <div className="flex items-center space-x-2">
-    //         <Sun className="h-5 w-5" />
-    //         <Switch
-    //           checked={theme === "dark"}
-    //           onCheckedChange={(checked) =>
-    //             setTheme(checked ? "dark" : "light")
-    //           }
-    //         />
-    //         <Moon className="h-5 w-5" />
-    //       </div>
-    //     </div>
-    //     <Separator />
-    //   </CardContent>
-    // </Card>
     <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-primary">
-              <Palette className="w-6 h-6 text-primary-foreground" />
+      <CardHeader className=" px-2 md:px-6">
+        <div className="flex md:flex-row flex-col md:items-center items-end justify-between">
+          <div className="flex md:items-center items-start gap-3">
+            <div className="md:p-2 p-1 rounded-lg bg-primary">
+              <Palette className="md:w-6 md:h-6 w-5 h-5 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold">Global Theme Selector</h1>
-              <p className="text-muted-foreground">
+              <h1 className="md:text-2xl text-lg font-bold">Global Theme Selector</h1>
+              <p className="text-muted-foreground md:text-base text-sm">
                 Choose your perfect color theme for the entire app
               </p>
             </div>
@@ -99,7 +67,7 @@ const Appearance = () => {
         </div>
       </CardHeader>
       <Separator />
-      <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+      <CardContent className="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-3 md:gap-6 gap-3 mb-12 px-2 md:px-6">
         {themes.map((theme) => (
           <Card
             key={theme.id}
@@ -108,30 +76,31 @@ const Appearance = () => {
             }`}
             onClick={() => setTheme(theme.id)}
           >
-            <CardHeader>
+            <CardHeader className="flex md:block items-center justify-center">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div
-                    className="p-2 rounded-lg text-white bg-primary"
+                    className="p-2 rounded-lg bg-primary"
                     style={{
                       backgroundColor: `${theme.colors.primary}`,
+                      color: `${theme.colors.primaryForeground}`,
                     }}
                   >
                     {themeIcons[theme.id as keyof typeof themeIcons]}
                   </div>
-                  <div>
+                  <div className="hidden md:block">
                     <CardTitle>{theme.name}</CardTitle>
                   </div>
                 </div>
                 {currentTheme.id === theme.id && (
-                  <div className="p-1 rounded-full bg-primary">
+                  <div className="p-1 rounded-full bg-primary hidden md:block">
                     <Check className="w-4 h-4 text-primary-foreground" />
                   </div>
                 )}
               </div>
-              <CardDescription>{theme.description}</CardDescription>
+              <CardDescription className="hidden md:block">{theme.description}</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className=" hidden md:block">
               {/* Color Palette Preview */}
               <div className="space-y-3">
                 <div className="flex gap-2">

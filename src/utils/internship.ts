@@ -8,6 +8,7 @@ import {
   milestonesSchema,
   tasksSchema,
 } from "@/pages/workboard/schema";
+import { BASE_URL } from "@/components/config/CommonBaseUrl";
 
 export const createInternship = async (
   data: z.infer<typeof internshipSchema>,
@@ -352,4 +353,13 @@ export const submitTaskTextSolution = async (
     text_answer,
   });
   return result.data;
+};
+
+export const generateCertificate = async (html: string) => {
+    const res = await fetch(`${BASE_URL}/generate-certificate`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ html }),
+  });
+  return res;
 };

@@ -15,43 +15,13 @@ import {
 } from "@/components/ui/sidebar";
 import { RootState } from "../store/store";
 import { useSelector } from "react-redux";
+import { navMain } from "@/constant";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = typeof window !== "undefined" && window.location.pathname;
   const user = useSelector((state: RootState) => state.auth.user);
 
-  const navMain = [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: Home,
-      visibleTo: ["user", "mentor"],
-    },
-    {
-      title: "Overview",
-      url: "/internship-overview",
-      icon: InfoIcon,
-      visibleTo: ["mentor"],
-    },
-    {
-      title: "Chats",
-      url: "/chat",
-      icon: MessageCircleIcon,
-      visibleTo: ["user", "mentor"],
-    },
-    {
-      title: "About",
-      url: "/about",
-      icon: Info,
-      visibleTo: ["user", "mentor"],
-    },
-    {
-      title: "Settings",
-      url: "/settings",
-      icon: Settings2,
-      visibleTo: ["user", "mentor"],
-    },
-  ];
+
 
   return (
     <Sidebar className="top-16" collapsible="icon" {...props}>

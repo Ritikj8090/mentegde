@@ -25,7 +25,6 @@ import { FrontEndUserProfile } from "..";
 import { format, parseISO } from "date-fns";
 import { calculateAge } from "@/constant/HelperFunctions";
 import { FaGenderless } from "react-icons/fa";
-import { UPLOAD_PHOTOS_URL } from "@/components/config/CommonBaseUrl";
 
 const UserProfilePage = () => {
   const [user, setUser] = useState<FrontEndUserProfile>();
@@ -51,27 +50,26 @@ const UserProfilePage = () => {
       {/* Header Section */}
       <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 group">
         <CardContent className=" flex items-center justify-center flex-col">
-          <Avatar className="mb-6 h-32 w-32 border-4 border-primary/20 ring-2 ring-primary/10">
+          <Avatar className="mb-6 md:h-32 md:w-32 h-20 w-20 border-4 border-primary/20 ring-2 ring-primary/10">
             <AvatarImage src={user.avatar} alt={user.full_name} />
-            <AvatarFallback className="bg-primary/10 text-3xl font-semibold text-primary">
+            <AvatarFallback className="bg-primary/10 md:text-3xl text-xl font-semibold text-primary">
               {user.full_name
                 .split(" ")
                 .map((n) => n[0])
                 .join("")}
             </AvatarFallback>
           </Avatar>
-          <h1 className="mb-3 text-4xl font-bold tracking-tight md:text-5xl">
+          <h1 className="mb-3 text-2xl font-bold tracking-tight md:text-5xl">
             {user.full_name}
           </h1>
 
-          <p className="mb-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
+          <p className="mb-6 max-w-2xl md:text-lg leading-relaxed text-muted-foreground">
             {user.bio}
           </p>
 
-          <div className="flex flex-col gap-2 text-sm text-muted-foreground sm:flex-row sm:gap-4 mb-2">
+          <div className="flex gap-2 text-sm text-muted-foreground sm:gap-4 mb-2">
             <div className="flex items-center justify-center gap-1">
               <Clock className="h-4 w-4" />
-
               {calculateAge(user.date_of_birth) + " years old"}
             </div>
             <div>|</div>
@@ -81,7 +79,7 @@ const UserProfilePage = () => {
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 text-sm text-muted-foreground sm:flex-row sm:gap-4">
+          <div className="flex flex-wrap items-center justify-center gap-2 text-sm text-muted-foreground sm:gap-4">
             <div className="flex items-center justify-center gap-2">
               <Mail className="h-4 w-4" />
               <a
@@ -111,10 +109,10 @@ const UserProfilePage = () => {
         <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 group">
           <CardHeader>
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <div className="flex md:h-10 md:w-10 h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <GraduationCap className="h-5 w-5" />
               </div>
-              <CardTitle className="text-xl">Education</CardTitle>
+              <CardTitle className="md:text-xl text-lg font-semibold">Education</CardTitle>
             </div>
           </CardHeader>
           <CardContent className="space-y-2">
@@ -137,10 +135,10 @@ const UserProfilePage = () => {
         <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 group">
           <CardHeader>
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <div className="flex md:h-10 md:w-10 h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <Code2 className="h-5 w-5" />
               </div>
-              <CardTitle className="text-xl">Skills</CardTitle>
+              <CardTitle className="md:text-xl text-lg font-semibold">Skills</CardTitle>
             </div>
           </CardHeader>
           <CardContent>
@@ -162,10 +160,10 @@ const UserProfilePage = () => {
           <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 group">
             <CardHeader>
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <div className="flex md:h-10 md:w-10 h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
                   <GraduationCap className="h-5 w-5" />
                 </div>
-                <CardTitle className="text-xl">Experience</CardTitle>
+                <CardTitle className="md:text-xl text-lg font-semibold">Experience</CardTitle>
               </div>
             </CardHeader>
             <CardContent className="space-y-2">
@@ -174,9 +172,9 @@ const UserProfilePage = () => {
                   {user.experience[0].title}
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  Experience:{" "}
+                  Exp:{" "}
                   <span className="font-medium text-foreground">
-                    {user.experience[0].experience + " years"}
+                    {user.experience[0].experience.split("(")[0]}
                   </span>
                 </div>
               </div>
@@ -199,24 +197,24 @@ const UserProfilePage = () => {
         <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 group">
           <CardHeader>
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <div className="flex md:h-10 md:w-10 h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <Target className="h-5 w-5" />
               </div>
-              <CardTitle className="text-xl">Social Media</CardTitle>
+              <CardTitle className="md:text-xl text-lg font-semibold">Social Media</CardTitle>
             </div>
           </CardHeader>
-          <CardContent className=" grid grid-cols-2">
+          <CardContent className=" grid grid-cols-2 space-y-2">
             <a href={user.linkedin_link} className=" flex items-center gap-1">
               <Linkedin size={17} />
-              <span className=" text-lg font-bold">LinkedIn</span>
+              <span className=" md:text-lg text-sm font-bold">LinkedIn</span>
             </a>
             <a href={user.github_link} className=" flex items-center gap-1">
               <Github size={17} />
-              <span className=" text-lg font-bold">Github</span>
+              <span className=" md:text-lg text-sm font-bold">Github</span>
             </a>
             <a href={user.resume_link} className=" flex items-center gap-1">
               <Book size={17} />
-              <span className=" text-lg font-bold">Resume</span>
+              <span className=" md:text-lg text-sm font-bold">Resume</span>
             </a>
             {user.portfolio_link && (
               <a
@@ -224,7 +222,7 @@ const UserProfilePage = () => {
                 className=" flex items-center gap-1"
               >
                 <Earth size={17} />
-                <span className=" text-lg font-bold">Portfolio</span>
+                <span className=" md:text-lg text-sm font-bold">Portfolio</span>
               </a>
             )}
           </CardContent>
@@ -233,10 +231,10 @@ const UserProfilePage = () => {
         <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 group">
           <CardHeader>
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <div className="flex md:h-10 md:w-10 h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <Heart className="h-5 w-5" />
               </div>
-              <CardTitle className="text-xl">Interests</CardTitle>
+              <CardTitle className="md:text-xl text-lg font-semibold">Interests</CardTitle>
             </div>
           </CardHeader>
           <CardContent>
@@ -257,10 +255,10 @@ const UserProfilePage = () => {
         <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 group">
           <CardHeader>
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <div className="flex md:h-10 md:w-10 h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <LetterText className="h-5 w-5" />
               </div>
-              <CardTitle className="text-xl">Languges</CardTitle>
+              <CardTitle className="md:text-xl text-lg font-semibold">Languages</CardTitle>
             </div>
           </CardHeader>
           <CardContent>
@@ -282,13 +280,13 @@ const UserProfilePage = () => {
         <Card className="bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-border/50 group">
           <CardHeader>
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <div className="flex md:h-10 md:w-10 h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <File className="h-5 w-5" />
               </div>
-              <CardTitle className="text-xl">Certificates</CardTitle>
+              <CardTitle className="md:text-xl text-lg font-semibold">Certificates</CardTitle>
             </div>
           </CardHeader>
-          <CardContent className=" space-y-5 grid grid-cols-2 gap-5">
+          <CardContent className=" space-y-5 md:grid grid-cols-2 gap-5">
             {user.certificates.map((certificate) => (
               <Card
                 key={certificate.link}
@@ -299,7 +297,7 @@ const UserProfilePage = () => {
                     <div className="font-semibold text-foreground">
                       {certificate.name}
                     </div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-sm text-muted-foreground hidden md:block">
                       {format(
                         parseISO(certificate.start_date.toString()),
                         "MMM dd, yyyy"
@@ -310,13 +308,19 @@ const UserProfilePage = () => {
                         "MMM dd, yyyy"
                       )}
                     </div>
+                    <a
+                      className="md:hidden flex items-center gap-2 border w-fit py-1 px-2 rounded-lg text-sm"
+                      href={certificate.link}
+                    >
+                      <Link size={15} />
+                    </a>
                   </div>
                   <div className=" flex items-center justify-between">
                     <div className="text-sm text-muted-foreground">
                       {certificate.provider}
                     </div>
                     <a
-                      className=" flex items-center gap-2 border w-fit py-1 px-2 rounded-lg text-sm"
+                      className="hidden md:flex items-center gap-2 border w-fit py-1 px-2 rounded-lg text-sm"
                       href={certificate.link}
                     >
                       <Link size={15} />

@@ -114,16 +114,19 @@ export function ViewInternshipDetail({
         <DialogHeader className="p-6 pb-4 border-b border-border">
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-1.5">
-              <DialogTitle className="text-xl font-semibold">
+              <DialogTitle className="md:text-xl font-semibold">
                 {internship.internship_title}
               </DialogTitle>
-              <p className="text-sm text-muted-foreground line-clamp-2">
+              <p className="md:text-sm text-xs text-muted-foreground line-clamp-2">
                 {internship.description}
               </p>
             </div>
             <Badge
               variant="outline"
-              className={cn(' capitalize',getStatusColor(internship.status))}
+              className={cn(
+                "hidden md:inline capitalize",
+                getStatusColor(internship.status),
+              )}
             >
               {internship.status}
             </Badge>
@@ -131,9 +134,20 @@ export function ViewInternshipDetail({
 
           {/* Price and Meta */}
           <div className="flex items-center gap-4 pt-3">
-            <div className="flex items-center gap-1.5 text-primary">
-              <FaRupeeSign className="h-4 w-4" />
-              <span className="font-semibold">{internship.price}</span>
+            <div className=" flex items-center justify-between w-full">
+              <div className="flex items-center gap-1.5 text-primary">
+                <FaRupeeSign className="h-4 w-4" />
+                <span className="font-semibold">{internship.price}</span>
+              </div>
+              <Badge
+                variant="outline"
+                className={cn(
+                  "md:hidden inline capitalize",
+                  getStatusColor(internship.status),
+                )}
+              >
+                {internship.status}
+              </Badge>
             </div>
             {internship.approval_required && user?.role === "mentor" && (
               <Badge
@@ -150,7 +164,7 @@ export function ViewInternshipDetail({
           {/* Host & Co-host Section */}
           <div className="space-y-3">
             <h3 className="font-bold">TEAM</h3>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="flex flex-col md:grid grid-cols-2 gap-3">
               {/* Host */}
               {internship.host.map((h) => (
                 <div
@@ -239,9 +253,7 @@ export function ViewInternshipDetail({
                 <button
                   onClick={() => setActiveInternTab("all")}
                   className={`px-3 py-1.5 text-xs font-medium rounded-full transition-all border ${
-                    activeInternTab === "all"
-                      && "bg-primary/40"
-            
+                    activeInternTab === "all" && "bg-primary/40"
                   }`}
                 >
                   All ({joinedInterns.length})
@@ -249,8 +261,7 @@ export function ViewInternshipDetail({
                 <button
                   onClick={() => setActiveInternTab("tech")}
                   className={`px-3 py-1.5 text-xs font-medium rounded-full transition-all border ${
-                    activeInternTab === "tech"
-                      && "bg-primary/40"
+                    activeInternTab === "tech" && "bg-primary/40"
                   }`}
                 >
                   Tech ({techInternsCount})
@@ -258,9 +269,7 @@ export function ViewInternshipDetail({
                 <button
                   onClick={() => setActiveInternTab("management")}
                   className={`px-3 py-1.5 text-xs font-medium rounded-full transition-all border ${
-                    activeInternTab === "management"
-                      && "bg-primary/40"
-      
+                    activeInternTab === "management" && "bg-primary/40"
                   }`}
                 >
                   Management ({mgmtInternsCount})
@@ -300,7 +309,6 @@ export function ViewInternshipDetail({
                             .join("")}
                         </AvatarFallback>
                       </Avatar>
-                     
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium truncate">
@@ -317,7 +325,6 @@ export function ViewInternshipDetail({
                         >
                           {intern.domain_name}
                         </Badge>
-                       
                       </div>
                     </div>
                     <Sparkles className="h-3.5 w-3.5 text-zinc-600 group-hover:text-amber-400 transition-colors" />
@@ -326,7 +333,7 @@ export function ViewInternshipDetail({
               </div>
 
               {filteredInterns.length === 0 && (
-                <div className="py-8 text-center text-zinc-500 text-sm">
+                <div className="py-8 text-center text-muted-foreground text-sm">
                   No interns in this category yet
                 </div>
               )}
@@ -392,7 +399,7 @@ export function ViewInternshipDetail({
                   </div>
 
                   {/* Dates */}
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid md:grid-cols-3 grid-cols-2 gap-3">
                     <div className="p-3 rounded-lg bg-muted/30 border border-border">
                       <p className="text-xs text-muted-foreground mb-1">
                         Start Date
